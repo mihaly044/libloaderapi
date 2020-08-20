@@ -4,7 +4,6 @@ using libloaderapi.Domain.Dto;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using Swashbuckle.Swagger;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -19,8 +18,11 @@ namespace libloaderapi.Domain.Services
     public interface IUserService
     {
         Task<string> AuthenticateAsync(AuthenticationRequest request);
-        IEnumerable<User> GetAll();
-        User GetById(Guid id);
+
+        Task<IList<User>> GetUsersAsync();
+
+        Task<User> GetByIdAsync(Guid id);
+
         IEnumerable<Role> GetRoles(User user);
     }
 
@@ -49,8 +51,10 @@ namespace libloaderapi.Domain.Services
             var key = Encoding.ASCII.GetBytes(_configuration["Secret"]);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
+                IssuedAt = DateTime.UtcNow,
+                Issuer = "api.libloader.net",
                 Subject = new ClaimsIdentity(GetClaims(user)),
-                Expires = DateTime.UtcNow.AddDays(7),
+                Expires = DateTime.UtcNow.AddMinutes(5),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
 
@@ -58,14 +62,14 @@ namespace libloaderapi.Domain.Services
             return tokenHandler.WriteToken(token);
         }
 
-        public IEnumerable<User> GetAll()
+        public async Task<IList<User>> GetUsersAsync()
         {
-            return _context.Users;
+            return await _context.Users.ToListAsync();
         }
 
-        public User GetById(Guid id)
+        public async Task<User> GetByIdAsync(Guid id)
         {
-            return _context.Users.FirstOrDefault(x => x.Id == id);
+            return await _context.Users.FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public IEnumerable<Role> GetRoles(User user)
