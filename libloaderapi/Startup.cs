@@ -61,14 +61,6 @@ namespace libloaderapi
                 Password = Configuration["Password"]
             };
 
-            services.AddDbContext<AppDbContext>(optionsBuilder =>
-            {
-                optionsBuilder.UseNpgsql(builder.ConnectionString);
-            });
-            
-            services.AddScoped<IUserService, UserService>();
-            services.AddCors();
-
             services.AddAuthentication(x =>
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -87,8 +79,11 @@ namespace libloaderapi
                  };
              });
 
-
-            services.AddControllers();
+            services
+                .AddDbContext<AppDbContext>(optionsBuilder => optionsBuilder.UseNpgsql(builder.ConnectionString))
+                .AddScoped<IUserService, UserService>()
+                .AddCors()
+                .AddControllers();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
