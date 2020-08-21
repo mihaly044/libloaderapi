@@ -1,5 +1,14 @@
 version: '3'
 services:
+  postgres:
+    image: postgres
+    container_name: postgres
+    environment:
+      - POSTGRES_PASSWORD
+      - POSTGRES_USER
+    networks:
+      - libloader-net
+
   web:
     build:
       context: .
@@ -12,6 +21,9 @@ services:
       - PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       - ASPNETCORE_URLS=http://+:80
       - DOTNET_RUNNING_IN_CONTAINER=true
+      - POSTGRES_PASSWORD
+      - POSTGRES_USER
+      - JWT_SECRET
     ipc: private
     logging:
       driver: json-file
@@ -21,14 +33,6 @@ services:
     working_dir: /app
     depends_on:
      - "postgres"
-    networks:
-      - libloader-net
-
-  postgres:
-    image: postgres
-    container_name: postgres
-    environment:
-      - POSTGRES_PASSWORD=boo
     networks:
       - libloader-net
 

@@ -56,8 +56,8 @@ namespace libloaderapi
             var builder = new NpgsqlConnectionStringBuilder
             {
                 ConnectionString = Configuration.GetConnectionString("Postgres"),
-                Username = Configuration["UserID"],
-                Password = Configuration["Password"]
+                Username = Configuration["POSTGRES_USER"],
+                Password = Configuration["POSTGRES_PASSWORD"]
             };
 
             services.AddAuthentication(x =>

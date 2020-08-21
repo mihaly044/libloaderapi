@@ -48,7 +48,7 @@ namespace libloaderapi.Domain.Services
                 return null;
 
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_configuration["Secret"]);
+            var key = Encoding.ASCII.GetBytes(_configuration["JWT_SECRET"]);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 IssuedAt = DateTime.UtcNow,

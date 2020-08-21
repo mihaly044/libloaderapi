@@ -18,6 +18,10 @@ namespace libloaderapi
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration((_, config) =>
+                {
+                    config.AddEnvironmentVariables("LIBLOADER_");
+                })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
