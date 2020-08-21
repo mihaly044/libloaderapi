@@ -19,3 +19,19 @@ services:
     ports:
       - 8081:80/tcp
     working_dir: /app
+    depends_on:
+     - "postgres"
+    networks:
+      - libloader-net
+
+  postgres:
+    image: postgres
+    container_name: postgres
+    environment:
+      - POSTGRES_PASSWORD=boo
+    networks:
+      - libloader-net
+
+networks:
+    libloader-net:
+      driver: bridge
