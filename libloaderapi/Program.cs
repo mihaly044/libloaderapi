@@ -21,6 +21,7 @@ namespace libloaderapi
                 .ConfigureAppConfiguration((_, config) =>
                 {
                     config.AddEnvironmentVariables("JWT_SECRET");
+                    config.AddEnvironmentVariables("POSTGRES_");
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
