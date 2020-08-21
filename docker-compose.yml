@@ -8,7 +8,6 @@ services:
     build:
       context: .
       dockerfile: libloaderapi/Dockerfile
-      network: libloader_net
     ports:
       - 8081:80/tcp
     depends_on:
