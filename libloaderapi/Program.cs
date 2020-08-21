@@ -20,7 +20,7 @@ namespace libloaderapi
             Host.CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration((_, config) =>
                 {
-                    config.AddEnvironmentVariables("LIBLOADER_");
+                    config.AddEnvironmentVariables("JWT_SECRET");
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
