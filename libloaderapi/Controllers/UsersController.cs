@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Authorization;
 using System.Collections.Generic;
 using libloaderapi.Domain.Database.Models;
 using System;
+using System.Linq;
+using System.Security.Claims;
 
 namespace libloaderapi.Controllers
 {
@@ -26,26 +28,44 @@ namespace libloaderapi.Controllers
         {
             var token = await _userService.AuthenticateAsync(request);
             if (token == null)
-                return BadRequest(new AuthenticationResult { Response = "400 Username or password incorrect" });
+                return BadRequest();
 
-            return Ok(new AuthenticationResult { Response = "200 OK", Token = token });
+            return Ok(new AuthenticationResult { Token = token });
         }
 
-        [HttpGet("user/all")]
+        [HttpGet]
         [Authorize(Roles = "LibAdmin")]
         public async Task<ActionResult<IList<User>>> GetAllUser()
         {
             return Ok(await _userService.GetUsersAsync());
         }
 
-        [HttpGet("user/{id}")]
-        [Authorize(Roles = "LibUser")]
+        [HttpGet("/uuid/{id}")]
+        [Authorize(Roles = "LibUser,LibAdmin")]
         public async Task<ActionResult<User>> GetUser(Guid id)
         {
+            if (!User.IsInRole("LibAdmin") && User.Identity.Name != id.ToString())
+                return Forbid();
+
             var user = await _userService.GetByIdAsync(id);
             if (user == null)
-                return NotFound("User not found");
-            return user;
+                return NotFound();
+
+            return Ok(user);
+        }
+
+        [HttpGet("/roles/uuid/{id}")]
+        [Authorize(Roles = "LibUser,LibAdmin")]
+        public async Task<ActionResult<IList<Role>>> GetRoles(Guid id)
+        {
+            if (!User.IsInRole("LibAdmin") && User.Identity.Name != id.ToString())
+                return Forbid();
+
+            var user = await _userService.GetByIdAsync(id);
+            if (user == null)
+                return NotFound();
+
+            return Ok(await _userService.GetRolesAsync(user));
         }
     }
 }

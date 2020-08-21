@@ -23,7 +23,7 @@ namespace libloaderapi.Domain.Services
 
         Task<User> GetByIdAsync(Guid id);
 
-        IEnumerable<Role> GetRoles(User user);
+        Task<IList<Role>> GetRolesAsync(User user);
     }
 
     public class UserService : IUserService
@@ -53,7 +53,7 @@ namespace libloaderapi.Domain.Services
             {
                 IssuedAt = DateTime.UtcNow,
                 Issuer = "api.libloader.net",
-                Subject = new ClaimsIdentity(GetClaims(user)),
+                Subject = new ClaimsIdentity(await GetClaimsAsync(user)),
                 Expires = DateTime.UtcNow.AddMinutes(5),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
@@ -72,26 +72,27 @@ namespace libloaderapi.Domain.Services
             return await _context.Users.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public IEnumerable<Role> GetRoles(User user)
+        public async Task<IList<Role>> GetRolesAsync(User user)
         {
-            return _context.UserRoles
+            return await _context.UserRoles
                 .Where(u => u.UserId == user.Id)
                 .Include(r => r.Role)
                 .Select(o => new Role
                 {
                     Id = o.Role.Id,
                     Name = o.Role.Name
-                });
+                })
+                .ToListAsync();
         }
 
-        public IEnumerable<Claim> GetClaims(User user)
+        public async Task<IList<Claim>> GetClaimsAsync(User user)
         {
-            var roles = GetRoles(user);
+            var roles = await GetRolesAsync(user);
             IList<Claim> claims = new List<Claim>();
             foreach (var role in roles)
                 claims.Add(new Claim(ClaimTypes.Role, role.Name));
 
-            claims.Add(new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()));
+            claims.Add(new Claim(ClaimTypes.Name, user.Id.ToString()));
             return claims;
         }
     }
