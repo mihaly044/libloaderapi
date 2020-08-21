@@ -1,0 +1,21 @@
+version: '3'
+services:
+  web:
+    build:
+      context: .
+      dockerfile: libloaderapi/Dockerfile
+    container_name: libloader_web
+    entrypoint:
+      - dotnet
+      - libloaderapi.dll
+    environment:
+      - PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+      - ASPNETCORE_URLS=http://+:80
+      - DOTNET_RUNNING_IN_CONTAINER=true
+    ipc: private
+    logging:
+      driver: json-file
+      options: {}
+    ports:
+      - 8081:80/tcp
+    working_dir: /app
