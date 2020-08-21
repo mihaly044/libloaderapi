@@ -48,9 +48,9 @@ namespace libloaderapi.Domain.Database
 
             var users = new[]
             {
-                new User { Name = "admin", Password = "nimda"},
-                new User { Name = "user", Password = "resu"},
-                new User { Name = "client",  Password = "tneilc"}
+                new User { Name = "admin", Password = "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3"},
+                new User { Name = "user", Password = "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3"},
+                new User { Name = "client",  Password = "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3"}
             };
             modelBuilder.Entity<User>()
                 .HasData(users);
