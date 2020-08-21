@@ -30,11 +30,6 @@
       "commandName": "Docker",
       "launchBrowser": true,
       "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/swagger",
-      "environmentVariables": {
-        "JWT_SECRET": "supersecret",
-        "POSTGRES_PASSWORD": "boo",
-        "POSTGRES_USER": "postgres"
-      },
       "publishAllPorts": true
     }
   }

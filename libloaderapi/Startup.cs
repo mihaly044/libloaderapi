@@ -56,8 +56,8 @@ namespace libloaderapi
             var builder = new NpgsqlConnectionStringBuilder
             {
                 ConnectionString = Configuration.GetConnectionString("Postgres"),
-                Username = Configuration["POSTGRES_USER"],
-                Password = Configuration["POSTGRES_PASSWORD"]
+                Username = Configuration["UserID"],
+                Password = Configuration["Password"]
             };
 
             services.AddAuthentication(x =>
@@ -113,18 +113,12 @@ namespace libloaderapi
 
             app.UseAuthentication();
             app.UseAuthorization();
+            //app.UseMiddleware<JwtMiddleware>();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
-
-            // Auto migrate db
-            using var serviceScope = app.ApplicationServices
-                .GetRequiredService<IServiceScopeFactory>()
-                .CreateScope();
-            using var context = serviceScope.ServiceProvider.GetService<AppDbContext>();
-            context.Database.Migrate();
         }
     }
 }

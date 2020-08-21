@@ -18,11 +18,6 @@ namespace libloaderapi
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureAppConfiguration((_, config) =>
-                {
-                    config.AddEnvironmentVariables("JWT_SECRET");
-                    config.AddEnvironmentVariables("POSTGRES_");
-                })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
