@@ -8,3 +8,4 @@ services:
       - "80"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - /root/.microsoft/usersecrets:/root/.microsoft/usersecrets:ro
