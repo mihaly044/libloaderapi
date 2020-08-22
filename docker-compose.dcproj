@@ -5,7 +5,7 @@
     <DockerTargetOS>Linux</DockerTargetOS>
     <ProjectGuid>dd269eb4-7b3d-47ff-9fd7-cd2a2e654823</ProjectGuid>
     <DockerLaunchAction>LaunchBrowser</DockerLaunchAction>
-    <DockerServiceUrl>{Scheme}://localhost:{ServicePort}/weatherforecast</DockerServiceUrl>
+    <DockerServiceUrl>{Scheme}://localhost:{ServicePort}/swagger</DockerServiceUrl>
     <DockerServiceName>libloaderapi</DockerServiceName>
 	<UserSecretsId>abd3aa2c-e10c-4b68-b78e-7d385557c5d6</UserSecretsId>
   </PropertyGroup>
