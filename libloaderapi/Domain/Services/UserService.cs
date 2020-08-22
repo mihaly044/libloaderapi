@@ -43,7 +43,8 @@ namespace libloaderapi.Domain.Services
                 .ComputeHash(Encoding.UTF8.GetBytes(request.Password))
                 .Select(b => b.ToString("x2")));
 
-            var user = await _context.Users.FirstOrDefaultAsync(x => x.Password == hashPass);
+            var user = await _context.Users.FirstOrDefaultAsync(x =>
+                x.Name == request.Username && request.Password == x.Password);
             if (user == null)
                 return null;
 
