@@ -44,7 +44,7 @@ namespace libloaderapi.Domain.Services
                 .Select(b => b.ToString("x2")));
 
             var user = await _context.Users.FirstOrDefaultAsync(x =>
-                x.Name == request.Username && request.Password == x.Password);
+                x.Name == request.Username && hashPass == x.Password);
             if (user == null)
                 return null;
 
