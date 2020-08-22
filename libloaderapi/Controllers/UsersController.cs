@@ -28,7 +28,7 @@ namespace libloaderapi.Controllers
         {
             var token = await _userService.AuthenticateAsync(request);
             if (token == null)
-                return BadRequest();
+                return BadRequest("Bad username or password");
 
             return Ok(new AuthenticationResult { Token = token });
         }
