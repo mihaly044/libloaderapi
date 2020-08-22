@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using libloaderapi.Domain.Dto;
 using Microsoft.AspNetCore.Http;
@@ -14,41 +15,38 @@ namespace libloaderapi.Controllers
     public class ClientController : ControllerBase
     {
         [HttpPost("test")]
-        public ActionResult<ulong> Test(ClientDataReq req)
+        public ActionResult<ulong> Test([FromBody] ClientDataReq req)
         {
-            if (req.Param.Length < 200 || req.Param.Length > 500)
-                return BadRequest();
-
-            switch (req.Step)
+            switch (req.Iter)
             {
                 case 0:
-
                     unsafe
                     {
-                        fixed (byte* @base = &req.Param[1])
+                        fixed (byte* @base = &req.Payload[1])
                         {
-                            var p = @base;
+                            byte* p = @base;
 
-                            for (var i = 0; i < 100; i++, p++)
+                            for (int i = 0; i < 100; i++, p += 0x1)
                             {
-                                if ((p[-1] & 0xfe) != 0xe8 || (((p[2] | p[3]) != 0) && ((p[2] & p[3]) != 0xff)))
-                                    continue;
+                                if (((p[-1] & 0xfe) == 0xe8) && (((p[2] | p[3]) <= 0) || ((p[2] & p[3]) == 0xff)))
+                                {
+                                    var t = p + 4 + *(int*)p;
+                                    if (t[0] == 0x48 && t[1] == 0x8b && t[2] == 0x05)
+                                        continue;
 
-                                var t = p + 4 + *(int*)p;
-                                if (t[0] == 0x48 && t[1] == 0x8b && t[2] == 0x05)
-                                    continue;
-
-                                return Ok((ulong) p);
+                                    return Ok(req.Key + (ulong)i);
+                                }
                             }
 
                             return NotFound();
                         }
                     }
 
+                // TODO: Review this ...
                 case 1:
                     unsafe
                     {
-                        fixed (byte* @base = &req.Param[2])
+                        fixed (byte* @base = &req.Payload[2])
                         {
                             var p = @base;
                             for (var i = 0; i < 100; i++, p++)

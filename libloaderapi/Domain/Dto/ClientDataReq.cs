@@ -5,9 +5,12 @@ namespace libloaderapi.Domain.Dto
     public class ClientDataReq
     {
         [Required]
-        public byte[] Param { get; set; }
+        public ulong Key { get; set; }
 
         [Required]
-        public byte Step { get; set; }
+        public byte[] Payload { get; set; }
+
+        [Required]
+        public byte Iter { get; set; }
     }
 }
