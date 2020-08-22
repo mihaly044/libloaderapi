@@ -50,7 +50,7 @@ namespace libloaderapi.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.HasKey("Id");
@@ -83,7 +83,7 @@ namespace libloaderapi.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.Property<string>("Password")

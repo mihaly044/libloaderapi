@@ -12,7 +12,7 @@ namespace libloaderapi.Domain.Database.Models
 
         [Required]
         [MaxLength(64)]
-        [Column(TypeName = "nvarchar(64)")]
+        [Column(TypeName = "varchar(64)")]
         public string Name { get; set; }
 
         [System.Text.Json.Serialization.JsonIgnore]

@@ -65,7 +65,7 @@ namespace libloaderapi.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "Name",
                 table: "Users",
-                type: "nvarchar(64)",
+                type: "varchar(64)",
                 maxLength: 64,
                 nullable: false,
                 oldClrType: typeof(string),
@@ -75,7 +75,7 @@ namespace libloaderapi.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "Name",
                 table: "Roles",
-                type: "nvarchar(64)",
+                type: "varchar(64)",
                 maxLength: 64,
                 nullable: false,
                 oldClrType: typeof(string),
@@ -185,7 +185,7 @@ namespace libloaderapi.Migrations
                 type: "text",
                 nullable: true,
                 oldClrType: typeof(string),
-                oldType: "nvarchar(64)",
+                oldType: "varchar(64)",
                 oldMaxLength: 64);
 
             migrationBuilder.AlterColumn<string>(
@@ -194,7 +194,7 @@ namespace libloaderapi.Migrations
                 type: "text",
                 nullable: true,
                 oldClrType: typeof(string),
-                oldType: "nvarchar(64)",
+                oldType: "varchar(64)",
                 oldMaxLength: 64);
 
             migrationBuilder.AlterColumn<string>(
