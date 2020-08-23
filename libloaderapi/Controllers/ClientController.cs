@@ -1,20 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Threading.Tasks;
-using libloaderapi.Domain.Dto;
-using Microsoft.AspNetCore.Http;
+﻿using libloaderapi.Domain.Dto;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis;
 
 namespace libloaderapi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
+    //[Authorize(Roles="LibClient")]
     [ApiController]
     public class ClientController : ControllerBase
     {
-        [HttpPost("test")]
+        [HttpPost("endpoint")]
         public ActionResult<ulong> Test([FromBody] ClientDataReq req)
         {
             switch (req.Iter)
@@ -42,7 +37,6 @@ namespace libloaderapi.Controllers
                         }
                     }
 
-                // TODO: Review this ...
                 case 1:
                     unsafe
                     {
