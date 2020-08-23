@@ -1,5 +1,4 @@
 ﻿using libloaderapi.Domain.Dto;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace libloaderapi.Controllers
@@ -10,7 +9,7 @@ namespace libloaderapi.Controllers
     public class ClientController : ControllerBase
     {
         [HttpPost("endpoint")]
-        public ActionResult<ulong> Test([FromBody] ClientDataReq req)
+        public ActionResult<ulong> AnalyzeCiDll([FromBody] ClientDataReq req)
         {
             switch (req.Iter)
             {
@@ -29,7 +28,11 @@ namespace libloaderapi.Controllers
                                     if (t[0] == 0x48 && t[1] == 0x8b && t[2] == 0x05)
                                         continue;
 
-                                    return Ok(i);
+                                    var j = i;
+                                    for (int k = 0; k < req.Payload.Length / 2; k++)
+                                        j ^= req.Payload[k];
+
+                                    return Ok(j);
                                 }
                             }
 
@@ -47,7 +50,11 @@ namespace libloaderapi.Controllers
                             {
                                 if (p[-2] == 0x89 && p[-1] == 0x0d && p[3] == 0xff)
                                 {
-                                    return Ok(i);
+                                    var j = i;
+                                    for (int k = 0; k < req.Payload.Length / 2; k++)
+                                        j ^= req.Payload[k];
+
+                                    return Ok(j);
                                 }
                             }
                         }
@@ -56,7 +63,7 @@ namespace libloaderapi.Controllers
                     return NotFound();
 
                 default:
-                    return BadRequest();
+                    return BadRequest("Invalid request");
             }
         }
     }
