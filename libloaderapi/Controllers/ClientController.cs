@@ -26,7 +26,7 @@ namespace libloaderapi.Controllers
                         {
                             byte* p = @base;
 
-                            for (int i = 0; i < 100; i++, p += 0x1)
+                            for (ulong i = 0; i < 100; i++, p += 0x1)
                             {
                                 if (((p[-1] & 0xfe) == 0xe8) && (((p[2] | p[3]) <= 0) || ((p[2] & p[3]) == 0xff)))
                                 {
@@ -34,7 +34,7 @@ namespace libloaderapi.Controllers
                                     if (t[0] == 0x48 && t[1] == 0x8b && t[2] == 0x05)
                                         continue;
 
-                                    return Ok(req.Key + (ulong)i);
+                                    return Ok(i);
                                 }
                             }
 
