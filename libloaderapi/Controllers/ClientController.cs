@@ -49,11 +49,11 @@ namespace libloaderapi.Controllers
                         fixed (byte* @base = &req.Payload[2])
                         {
                             var p = @base;
-                            for (var i = 0; i < 100; i++, p++)
+                            for (ulong i = 0; i < 100; i++, p++)
                             {
                                 if (p[-2] == 0x89 && p[-1] == 0x0d && p[3] == 0xff)
                                 {
-                                    return Ok((ulong) p);
+                                    return Ok(i);
                                 }
                             }
                         }
