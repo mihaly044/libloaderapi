@@ -1,70 +1,41 @@
 ﻿using libloaderapi.Domain.Dto;
+using libloaderapi.Domain.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.IO;
+using System.Text;
 
 namespace libloaderapi.Controllers
 {
     [Route("[controller]")]
-    //[Authorize(Roles="LibClient")]
     [ApiController]
     public class ClientController : ControllerBase
     {
-        [HttpPost("endpoint")]
-        public ActionResult<ulong> AnalyzeCiDll([FromBody] ClientDataReq req)
+        private readonly IAnalyzerService _analyzerService;
+
+        public ClientController(IAnalyzerService analyzerService)
         {
-            switch (req.Iter)
+            _analyzerService = analyzerService;
+        }
+
+        [HttpPost("analyze")]
+        [Authorize(Roles = "LibClient")]
+        public ActionResult<ulong> Analyze([FromBody] ClientDataReq req)
+        {
+            return req.Iter switch
             {
-                case 0:
-                    unsafe
-                    {
-                        fixed (byte* @base = &req.Payload[1])
-                        {
-                            byte* p = @base;
+                0 => Ok(_analyzerService.Iter0(req.Payload).Result),
+                1 => Ok(_analyzerService.Iter1(req.Payload).Result),
+                _ => BadRequest("Invalid request"),
+            };
+        }
 
-                            for (ulong i = 0; i < 100; i++, p += 0x1)
-                            {
-                                if (((p[-1] & 0xfe) == 0xe8) && (((p[2] | p[3]) <= 0) || ((p[2] & p[3]) == 0xff)))
-                                {
-                                    var t = p + 4 + *(int*)p;
-                                    if (t[0] == 0x48 && t[1] == 0x8b && t[2] == 0x05)
-                                        continue;
-
-                                    var j = i;
-                                    for (int k = 0; k < req.Payload.Length / 2; k++)
-                                        j ^= req.Payload[k];
-
-                                    return Ok(j);
-                                }
-                            }
-
-                            return NotFound();
-                        }
-                    }
-
-                case 1:
-                    unsafe
-                    {
-                        fixed (byte* @base = &req.Payload[2])
-                        {
-                            var p = @base;
-                            for (ulong i = 0; i < 100; i++, p++)
-                            {
-                                if (p[-2] == 0x89 && p[-1] == 0x0d && p[3] == 0xff)
-                                {
-                                    var j = i;
-                                    for (int k = 0; k < req.Payload.Length / 2; k++)
-                                        j ^= req.Payload[k];
-
-                                    return Ok(j);
-                                }
-                            }
-                        }
-                    }
-
-                    return NotFound();
-
-                default:
-                    return BadRequest("Invalid request");
-            }
+        [HttpGet("test")]
+        public FileStreamResult Test()
+        {
+            var data = Encoding.UTF8.GetBytes("Hello!");
+            return File(new MemoryStream(data), "application/octet-stream", $"{Guid.NewGuid()}.txt");
         }
     }
 }

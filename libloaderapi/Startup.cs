@@ -85,6 +85,7 @@ namespace libloaderapi
                 .AddRouting(opts => opts.LowercaseUrls = true)
                 .AddControllers();
             services.AddApplicationInsightsTelemetry(Configuration["APPINSIGHTS_INSTRUMENTATIONKEY"]);
+            services.AddScoped<IAnalyzerService, AnalyzerService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -116,7 +117,6 @@ namespace libloaderapi
 
             app.UseAuthentication();
             app.UseAuthorization();
-            //app.UseMiddleware<JwtMiddleware>();
 
             app.UseEndpoints(endpoints =>
             {

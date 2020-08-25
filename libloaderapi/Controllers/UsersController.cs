@@ -6,8 +6,6 @@ using Microsoft.AspNetCore.Authorization;
 using System.Collections.Generic;
 using libloaderapi.Domain.Database.Models;
 using System;
-using System.Linq;
-using System.Security.Claims;
 
 namespace libloaderapi.Controllers
 {
