@@ -20,7 +20,8 @@ namespace libloaderapi
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>();
+                    webBuilder.UseStartup<Startup>()
+                    .ConfigureKestrel(kestrel => kestrel.AddServerHeader = false);
                 });
     }
 }
