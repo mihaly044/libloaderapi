@@ -1,3 +1,4 @@
+using Azure.Storage.Blobs;
 using libloaderapi.Domain.Database;
 using libloaderapi.Domain.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -80,12 +81,15 @@ namespace libloaderapi
 
             services
                 .AddDbContext<AppDbContext>(optionsBuilder => optionsBuilder.UseNpgsql(builder.ConnectionString))
-                .AddScoped<IUserService, UserService>()
                 .AddCors()
                 .AddRouting(opts => opts.LowercaseUrls = true)
                 .AddControllers();
             services.AddApplicationInsightsTelemetry(Configuration["APPINSIGHTS_INSTRUMENTATIONKEY"]);
-            services.AddScoped<IAnalyzerService, AnalyzerService>();
+
+            services
+                .AddSingleton<IAnalyzerService, AnalyzerService>()
+                .AddScoped<IUserService, UserService>()
+                .AddSingleton<IBlobService, BlobService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

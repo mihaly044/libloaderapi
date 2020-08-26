@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 
 namespace libloaderapi.Controllers
 {
+    [ApiExplorerSettings(IgnoreApi = true)]
     [Route("")]
     public class IndexController : ControllerBase
     {
