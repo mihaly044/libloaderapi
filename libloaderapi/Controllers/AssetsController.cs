@@ -6,6 +6,7 @@ namespace libloaderapi.Controllers
 {
     [Authorize(Roles = "LibClient")]
     [Route("[controller]")]
+    [ApiController]
     public class AssetsController : ControllerBase
     {
         private readonly IBlobService _blobService;
