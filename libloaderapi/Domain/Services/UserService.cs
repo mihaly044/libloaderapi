@@ -1,6 +1,7 @@
 ﻿using libloaderapi.Domain.Database;
 using libloaderapi.Domain.Database.Models;
 using libloaderapi.Domain.Dto;
+using libloaderapi.Domain.Utils;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -9,7 +10,6 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -39,10 +39,7 @@ namespace libloaderapi.Domain.Services
 
         public async Task<string> AuthenticateAsync(AuthenticationRequest request)
         {
-            var hashPass = string.Concat(new SHA1Managed()
-                .ComputeHash(Encoding.UTF8.GetBytes(request.Password))
-                .Select(b => b.ToString("x2")));
-
+            var hashPass = PasswordUtils.GetSHA1Hash(request.Password);
             var user = await _context.Users.FirstOrDefaultAsync(x =>
                 x.Name == request.Username && hashPass == x.Password);
             if (user == null)
