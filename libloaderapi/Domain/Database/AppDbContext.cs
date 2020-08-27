@@ -6,6 +6,7 @@ namespace libloaderapi.Domain.Database
 {
     public class AppDbContext : DbContext
     {
+        // ReSharper disable once NotAccessedField.Local
         private readonly DbContextOptions<AppDbContext> _options;
 
         public DbSet<User> Users { get; set; }

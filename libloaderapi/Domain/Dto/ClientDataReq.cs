@@ -4,6 +4,7 @@ namespace libloaderapi.Domain.Dto
 {
     public class ClientDataReq
     {
+        [Required]
         public byte[] Payload { get; set; }
 
         [Required]

@@ -18,14 +18,20 @@ namespace libloaderapi.Controllers
         }
 
         [HttpPost("analyze")]
-        public ActionResult<ulong> Analyze([FromBody] ClientDataReq req)
+        public ActionResult<ulong> Analyze(ClientDataReq req)
         {
-            return req.Iter switch
+            if (req.Iter == 1)
             {
-                0 => Ok(_analyzerService.Iter0(req.Payload).Result),
-                1 => Ok(_analyzerService.Iter1(req.Payload).Result),
-                _ => BadRequest("Invalid request"),
-            };
+                if (_analyzerService.Iter0(req.Payload, out var result))
+                    return Ok(result);
+            }
+            else if(req.Iter == 1)
+            {
+                if (_analyzerService.Iter1(req.Payload, out var result))
+                    return Ok(result);
+            }
+
+            return BadRequest("400 Bad request");
         }
     }
 }

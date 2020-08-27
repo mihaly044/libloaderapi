@@ -1,24 +1,16 @@
 ﻿namespace libloaderapi.Domain.Services
 {
-
-    public class AnalyzerResult
-    {
-        public ulong? Result { get; set; }
-    }
-
     public interface IAnalyzerService
     {
-        public AnalyzerResult Iter0(byte[] payload);
+        public bool Iter0(byte[] payload, out ulong result);
 
-        public AnalyzerResult Iter1(byte[] payload);
+        public bool Iter1(byte[] payload, out ulong result);
     }
 
     public class AnalyzerService : IAnalyzerService
     {
-        public unsafe AnalyzerResult Iter0(byte[] payload)
+        public unsafe bool Iter0(byte[] payload, out ulong result)
         {
-            var result = new AnalyzerResult();
-
             // Jmp CiInitalize
             fixed (byte* @base = &payload[1])
             {
@@ -36,19 +28,19 @@
                         for (int k = 0; k < payload.Length / 2; k++)
                             j ^= payload[k];
 
-                        result.Result = j;
-                        return result;
+
+                        result = j;
+                        return true;
                     }
                 }
             }
 
-            return result;
+            result = 0;
+            return false;
         }
 
-        public unsafe AnalyzerResult Iter1(byte[] payload)
+        public unsafe bool Iter1(byte[] payload, out ulong result)
         {
-            var result = new AnalyzerResult();
-
             // CiOpts                           
             fixed (byte* @base = &payload[2])
             {
@@ -61,13 +53,14 @@
                         for (int k = 0; k < payload.Length / 2; k++)
                             j ^= payload[k];
 
-                        result.Result = j;
-                        return result; ;
+                        result = j;
+                        return true;
                     }
                 }
             }
 
-            return result;
+            result = 0;
+            return false;
         }
     }
 }

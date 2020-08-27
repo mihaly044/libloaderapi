@@ -1,4 +1,3 @@
-using Azure.Storage.Blobs;
 using libloaderapi.Domain.Database;
 using libloaderapi.Domain.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -88,7 +87,8 @@ namespace libloaderapi
 
             services
                 .AddSingleton<IAnalyzerService, AnalyzerService>()
-                .AddScoped<IUserService, UserService>()
+                .AddScoped<IAuthenticationService, AuthenticationService>()
+                .AddScoped<IUsersService, UsersService>()
                 .AddSingleton<IBlobService, BlobService>();
         }
 

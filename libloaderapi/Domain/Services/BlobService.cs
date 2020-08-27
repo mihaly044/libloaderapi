@@ -1,37 +1,33 @@
-﻿
-using Azure.Storage;
+﻿using Azure.Storage;
 using Azure.Storage.Blobs;
 using Azure.Storage.Sas;
 using libloaderapi.Domain.Extensions;
 using Microsoft.Azure.Storage;
 using Microsoft.Extensions.Configuration;
 using System;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
 
 namespace libloaderapi.Domain.Services
 {
     public interface IBlobService
     {
-        string GetBlobDownloadURI(string name);
+        string GetBlobDownloadUri(string name);
     }
 
     public class BlobService : IBlobService
     {
         private readonly BlobContainerClient _container;
-        private readonly BlobServiceClient _client;
         private readonly StorageSharedKeyCredential _key;
 
         public BlobService(IConfiguration configuration)
         {
             var connectionString = configuration["AZURE_STORAGE_CONNECTION_STRING"];
 
-            _client = new BlobServiceClient(connectionString);
-            _container = _client.GetBlobContainerClient("serve");
+            var client = new BlobServiceClient(connectionString);
+            _container = client.GetBlobContainerClient("serve");
             _key = CloudStorageAccount.Parse(connectionString).Credentials.ToStorageSharedKeyCredential();
         }
 
-        public string GetBlobDownloadURI(string name)
+        public string GetBlobDownloadUri(string name)
         {
 
             var blobClient = _container.GetBlobClient(name);
@@ -48,7 +44,7 @@ namespace libloaderapi.Domain.Services
             };
             sasBuilder.SetPermissions(BlobContainerSasPermissions.Read);
 
-            return blobClient.Uri + "?" + sasBuilder.ToSasQueryParameters(_key).ToString();
+            return blobClient.Uri + "?" + sasBuilder.ToSasQueryParameters(_key);
         }
     }
 }
