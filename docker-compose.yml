@@ -3,6 +3,7 @@ version: '3.4'
 services:
   libloaderapi:
     container_name: libloaderapi
+    hostname:  libloaderapi
     restart: unless-stopped
     image: ${DOCKER_REGISTRY-}libloaderapi
     build:
@@ -15,7 +16,8 @@ services:
 
   db:
     image: postgres
-    container_name: postgres_libloaderapi
+    container_name: db_libloaderapi
+    hostname: db
     restart: always
     hostname: db
     environment:

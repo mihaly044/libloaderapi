@@ -1,15 +1,15 @@
-﻿namespace libloaderapi.Domain.Dto
+﻿namespace libloaderapi.Domain.Dto.Auth
 {
-    public class ClientAuthenticationReq
+    public class ClientAuthRequest
     {
         /// <summary>
         /// The SHA1 hash of the client executable
         /// </summary>
-        public string Hash { get; set; }
+        public string CryptoId { get; set; }
 
         /// <summary>
         /// The HMACSHA56/1 digest of the client executable's SHA1 hash
         /// </summary>
-        public string Signature { get; set; }
+        public string Digest { get; set; }
     }
 }

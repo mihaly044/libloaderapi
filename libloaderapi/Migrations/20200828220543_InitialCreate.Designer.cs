@@ -10,7 +10,7 @@ using libloaderapi.Domain.Database;
 namespace libloaderapi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20200820173534_InitialCreate")]
+    [Migration("20200828220543_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -21,14 +21,27 @@ namespace libloaderapi.Migrations
                 .HasAnnotation("ProductVersion", "3.1.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            modelBuilder.Entity("libloaderapi.Domain.Database.Models.Binary", b =>
+            modelBuilder.Entity("libloaderapi.Domain.Database.Models.Client", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Sha1")
-                        .HasColumnType("text");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasColumnType("varchar(128)")
+                        .HasMaxLength(128);
+
+                    b.Property<DateTime?>("LastUsed")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Sha256")
+                        .IsRequired()
+                        .HasColumnType("varchar(64)")
+                        .HasMaxLength(64);
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
@@ -37,7 +50,7 @@ namespace libloaderapi.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Binaries");
+                    b.ToTable("Clients");
                 });
 
             modelBuilder.Entity("libloaderapi.Domain.Database.Models.Role", b =>
@@ -47,7 +60,9 @@ namespace libloaderapi.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Name")
-                        .HasColumnType("text");
+                        .IsRequired()
+                        .HasColumnType("varchar(64)")
+                        .HasMaxLength(64);
 
                     b.HasKey("Id");
 
@@ -56,17 +71,17 @@ namespace libloaderapi.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("2c3b97d9-dfd1-4466-8a57-2a3b1eff9a82"),
+                            Id = new Guid("a6442220-61c1-42b9-83b3-5602948d99be"),
                             Name = "LibAdmin"
                         },
                         new
                         {
-                            Id = new Guid("92c2517d-6f2f-4a93-9345-0293a65e0936"),
+                            Id = new Guid("c5f85b3a-cf5d-4d07-9456-3cd07fc26501"),
                             Name = "LibUser"
                         },
                         new
                         {
-                            Id = new Guid("3b82c301-dea3-4054-8a22-475b86261384"),
+                            Id = new Guid("7e84358d-7850-432f-8879-4bd1dab2d3f3"),
                             Name = "LibClient"
                         });
                 });
@@ -78,10 +93,14 @@ namespace libloaderapi.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Name")
-                        .HasColumnType("text");
+                        .IsRequired()
+                        .HasColumnType("varchar(64)")
+                        .HasMaxLength(64);
 
                     b.Property<string>("Password")
-                        .HasColumnType("text");
+                        .IsRequired()
+                        .HasColumnType("varchar(64)")
+                        .HasMaxLength(64);
 
                     b.HasKey("Id");
 
@@ -90,21 +109,15 @@ namespace libloaderapi.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("d8f4e084-8dc2-4af6-8d7a-c596e8b87d4f"),
+                            Id = new Guid("ccc10522-6109-47df-beed-08280777b5a9"),
                             Name = "admin",
-                            Password = "nimda"
+                            Password = "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08"
                         },
                         new
                         {
-                            Id = new Guid("a310e717-cc64-45dd-922e-1974d2fd5a80"),
+                            Id = new Guid("698ed0ca-b489-4a8d-acaf-0d18c8a78d0c"),
                             Name = "user",
-                            Password = "resu"
-                        },
-                        new
-                        {
-                            Id = new Guid("785fb01c-2e8f-40f5-8b69-ec082842447f"),
-                            Name = "client",
-                            Password = "tneilc"
+                            Password = "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08"
                         });
                 });
 
@@ -125,25 +138,20 @@ namespace libloaderapi.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = new Guid("d8f4e084-8dc2-4af6-8d7a-c596e8b87d4f"),
-                            RoleId = new Guid("2c3b97d9-dfd1-4466-8a57-2a3b1eff9a82")
+                            UserId = new Guid("ccc10522-6109-47df-beed-08280777b5a9"),
+                            RoleId = new Guid("a6442220-61c1-42b9-83b3-5602948d99be")
                         },
                         new
                         {
-                            UserId = new Guid("a310e717-cc64-45dd-922e-1974d2fd5a80"),
-                            RoleId = new Guid("92c2517d-6f2f-4a93-9345-0293a65e0936")
-                        },
-                        new
-                        {
-                            UserId = new Guid("785fb01c-2e8f-40f5-8b69-ec082842447f"),
-                            RoleId = new Guid("3b82c301-dea3-4054-8a22-475b86261384")
+                            UserId = new Guid("698ed0ca-b489-4a8d-acaf-0d18c8a78d0c"),
+                            RoleId = new Guid("c5f85b3a-cf5d-4d07-9456-3cd07fc26501")
                         });
                 });
 
-            modelBuilder.Entity("libloaderapi.Domain.Database.Models.Binary", b =>
+            modelBuilder.Entity("libloaderapi.Domain.Database.Models.Client", b =>
                 {
                     b.HasOne("libloaderapi.Domain.Database.Models.User", "User")
-                        .WithMany("Binaries")
+                        .WithMany("Clients")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

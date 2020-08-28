@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 
 namespace libloaderapi.Controllers
 {
@@ -8,12 +9,13 @@ namespace libloaderapi.Controllers
     [ApiController]
     public class IndexController : ControllerBase
     {
+        [AllowAnonymous]
         [HttpGet]
-        public Task<string> Get()
+        public IActionResult Get()
         {
-            // This is going to be funny
-            Response.StatusCode = 418;
-            return Task.FromResult("I'm a teapot (really!)");
+            Response.StatusCode = StatusCodes.Status501NotImplemented;
+            Response.ContentType = "text/plain";
+            return new EmptyResult();
         }
     }
 }

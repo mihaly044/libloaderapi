@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace libloaderapi.Domain.Dto
+namespace libloaderapi.Domain.Dto.Client
 {
-    public class ClientDataReq
+    public class AnalyserContext
     {
         [Required]
         public byte[] Payload { get; set; }

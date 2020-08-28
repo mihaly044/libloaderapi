@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using libloaderapi.Domain.Database;
 using libloaderapi.Domain.Database.Models;
 using libloaderapi.Domain.Dto.Auth;
-using libloaderapi.Domain.Utils;
+using libloaderapi.Utils;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -17,63 +17,115 @@ namespace libloaderapi.Domain.Services
 {
     public interface IAuthenticationService
     {
+        /// <summary>
+        /// Authenticates an user and generates a JWT token
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
         Task<AuthResult> AuthenticateAsync(AuthRequest request);
+
+        /// <summary>
+        /// Authenticates a client and generates a JWT token
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        Task<AuthResult> AuthenticateAsync(ClientAuthRequest request);
     }
 
     public class AuthenticationService : IAuthenticationService
     {
         private readonly AppDbContext _context;
-        private readonly byte[] _key;
+        private readonly byte[] _jwtSecretKey;
         private readonly IUsersService _usersService;
 
         public AuthenticationService(IConfiguration configuration, IUsersService usersService,
             AppDbContext context)
         {
             _usersService = usersService;
-            _key = Encoding.UTF8.GetBytes(configuration["Secret"]);
+            _jwtSecretKey = Encoding.UTF8.GetBytes(configuration["Secret"]);
             _context = context;
         }
 
         public async Task<AuthResult> AuthenticateAsync(AuthRequest request)
         {
             var result = new AuthResult();
+            var hashPass = CryptoUtils.Sha256(request.Password);
 
-            var hashPass = PasswordUtils.GetSha1Hash(request.Password);
             var user = await _context.Users.FirstOrDefaultAsync(x =>
                 x.Name == request.Username && hashPass == x.Password);
             if (user == null)
             {
                 result.Success = false;
-                result.Message = "Invalid username or password";
+                result.Message = "Bad username or password";
                 return result;
             }
-            
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                IssuedAt = DateTime.UtcNow,
-                Issuer = "api.libloader.net",
-                Subject = new ClaimsIdentity(await GetClaimsAsync(user)),
-                Expires = DateTime.UtcNow.AddMinutes(5),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(_key),
-                    SecurityAlgorithms.HmacSha256Signature)
-            };
 
-            var token = tokenHandler.CreateToken(tokenDescriptor);
+            var claims = await GetClaimsAsync(user);
+            result.Message = "OK";
             result.Success = true;
-            result.Token = tokenHandler.WriteToken(token);
+            result.Token = GenerateToken(claims, DateTime.UtcNow.AddMinutes(10));
             return result;
         }
 
-        public async Task<IList<Claim>> GetClaimsAsync(User user)
+        public async Task<AuthResult> AuthenticateAsync(ClientAuthRequest request)
         {
-            var roles = await _usersService.GetRolesAsync(user);
+            var result = new AuthResult();
+
+            var client = await _context.Clients
+                .FirstOrDefaultAsync(x => x.Sha256 == request.CryptoId);
+
+            if (client == null)
+            {
+                result.Success = false;
+                result.Message = "401 Unauthorized (1)";
+                return result;
+            }
+
+            if (client.Key == request.Digest)
+            {
+                result.Success = true;
+                result.Message = "OK";
+                result.Token = GenerateToken(new[]
+                {
+                    new Claim(ClaimTypes.Role, PredefinedRoles.Client),
+                    new Claim(ClaimTypes.Name, client.Id.ToString())
+                }, DateTime.UtcNow.AddMinutes(10));
+            }
+            else
+            {
+                result.Success = false;
+                result.Message = "401 Unauthorized (2)";
+            }
+
+            return result;
+        }
+
+        public async Task<IEnumerable<Claim>> GetClaimsAsync(User user)
+        {
+            var roles = await _usersService.GetRolesAsync(user.Id);
             var claims = roles.
                 Select(role => new Claim(ClaimTypes.Role, role.Name))
                 .ToList();
 
             claims.Add(new Claim(ClaimTypes.Name, user.Id.ToString()));
             return claims;
+        }
+
+        private string GenerateToken(IEnumerable<Claim> claims, DateTime? expires = null)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                IssuedAt = DateTime.UtcNow,
+                Issuer = Constants.TokenIssuer,
+                Subject = new ClaimsIdentity(claims),
+                Expires = expires,
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(_jwtSecretKey),
+                    SecurityAlgorithms.HmacSha256Signature)
+            };
+
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
         }
     }
 }

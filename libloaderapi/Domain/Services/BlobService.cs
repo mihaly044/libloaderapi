@@ -10,7 +10,12 @@ namespace libloaderapi.Domain.Services
 {
     public interface IBlobService
     {
-        string GetBlobDownloadUri(string name);
+        /// <summary>
+        /// Create a public download link to a blob resources
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        string GetBlobDownloadUrl(string name);
     }
 
     public class BlobService : IBlobService
@@ -23,13 +28,12 @@ namespace libloaderapi.Domain.Services
             var connectionString = configuration["AZURE_STORAGE_CONNECTION_STRING"];
 
             var client = new BlobServiceClient(connectionString);
-            _container = client.GetBlobContainerClient("serve");
+            _container = client.GetBlobContainerClient(Constants.BlobContainer);
             _key = CloudStorageAccount.Parse(connectionString).Credentials.ToStorageSharedKeyCredential();
         }
 
-        public string GetBlobDownloadUri(string name)
+        public string GetBlobDownloadUrl(string name)
         {
-
             var blobClient = _container.GetBlobClient(name);
             if(!blobClient.Exists())
                 return string.Empty;

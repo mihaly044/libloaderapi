@@ -1,9 +1,11 @@
 ﻿using libloaderapi.Domain.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace libloaderapi.Controllers
 {
-    //[Authorize(Roles = "LibClient")]
+    [ApiExplorerSettings(IgnoreApi = true)]
+    [Authorize(Roles = PredefinedRoles.Client)]
     [Route("[controller]")]
     [ApiController]
     public class AssetsController : ControllerBase
@@ -18,11 +20,11 @@ namespace libloaderapi.Controllers
         [HttpGet("get/{name}")]
         public ActionResult<string> GetResource(string name)
         {
-            var uri = _blobService.GetBlobDownloadUri(name);
+            var uri = _blobService.GetBlobDownloadUrl(name);
             return uri switch
             {
                 "" => NotFound("Resource not found"),
-                _ => Ok(uri),
+                _ => Redirect(uri),
             };
         }
     }

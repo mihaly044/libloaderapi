@@ -12,7 +12,7 @@ namespace libloaderapi.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
-                    Name = table.Column<string>(nullable: true)
+                    Name = table.Column<string>(type: "varchar(64)", maxLength: 64, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -24,8 +24,8 @@ namespace libloaderapi.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
-                    Name = table.Column<string>(nullable: true),
-                    Password = table.Column<string>(nullable: true)
+                    Name = table.Column<string>(type: "varchar(64)", maxLength: 64, nullable: false),
+                    Password = table.Column<string>(type: "varchar(64)", maxLength: 64, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -33,18 +33,21 @@ namespace libloaderapi.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Binaries",
+                name: "Clients",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
-                    Sha1 = table.Column<string>(nullable: true),
+                    Sha256 = table.Column<string>(type: "varchar(64)", maxLength: 64, nullable: false),
+                    Key = table.Column<string>(type: "varchar(128)", maxLength: 128, nullable: false),
+                    CreatedAt = table.Column<DateTime>(nullable: false),
+                    LastUsed = table.Column<DateTime>(nullable: true),
                     UserId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Binaries", x => x.Id);
+                    table.PrimaryKey("PK_Clients", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Binaries_Users_UserId",
+                        name: "FK_Clients_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -80,9 +83,9 @@ namespace libloaderapi.Migrations
                 columns: new[] { "Id", "Name" },
                 values: new object[,]
                 {
-                    { new Guid("2c3b97d9-dfd1-4466-8a57-2a3b1eff9a82"), "LibAdmin" },
-                    { new Guid("92c2517d-6f2f-4a93-9345-0293a65e0936"), "LibUser" },
-                    { new Guid("3b82c301-dea3-4054-8a22-475b86261384"), "LibClient" }
+                    { new Guid("a6442220-61c1-42b9-83b3-5602948d99be"), "LibAdmin" },
+                    { new Guid("c5f85b3a-cf5d-4d07-9456-3cd07fc26501"), "LibUser" },
+                    { new Guid("7e84358d-7850-432f-8879-4bd1dab2d3f3"), "LibClient" }
                 });
 
             migrationBuilder.InsertData(
@@ -90,9 +93,8 @@ namespace libloaderapi.Migrations
                 columns: new[] { "Id", "Name", "Password" },
                 values: new object[,]
                 {
-                    { new Guid("d8f4e084-8dc2-4af6-8d7a-c596e8b87d4f"), "admin", "nimda" },
-                    { new Guid("a310e717-cc64-45dd-922e-1974d2fd5a80"), "user", "resu" },
-                    { new Guid("785fb01c-2e8f-40f5-8b69-ec082842447f"), "client", "tneilc" }
+                    { new Guid("ccc10522-6109-47df-beed-08280777b5a9"), "admin", "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08" },
+                    { new Guid("698ed0ca-b489-4a8d-acaf-0d18c8a78d0c"), "user", "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08" }
                 });
 
             migrationBuilder.InsertData(
@@ -100,14 +102,13 @@ namespace libloaderapi.Migrations
                 columns: new[] { "UserId", "RoleId" },
                 values: new object[,]
                 {
-                    { new Guid("d8f4e084-8dc2-4af6-8d7a-c596e8b87d4f"), new Guid("2c3b97d9-dfd1-4466-8a57-2a3b1eff9a82") },
-                    { new Guid("a310e717-cc64-45dd-922e-1974d2fd5a80"), new Guid("92c2517d-6f2f-4a93-9345-0293a65e0936") },
-                    { new Guid("785fb01c-2e8f-40f5-8b69-ec082842447f"), new Guid("3b82c301-dea3-4054-8a22-475b86261384") }
+                    { new Guid("ccc10522-6109-47df-beed-08280777b5a9"), new Guid("a6442220-61c1-42b9-83b3-5602948d99be") },
+                    { new Guid("698ed0ca-b489-4a8d-acaf-0d18c8a78d0c"), new Guid("c5f85b3a-cf5d-4d07-9456-3cd07fc26501") }
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Binaries_UserId",
-                table: "Binaries",
+                name: "IX_Clients_UserId",
+                table: "Clients",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
@@ -119,7 +120,7 @@ namespace libloaderapi.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Binaries");
+                name: "Clients");
 
             migrationBuilder.DropTable(
                 name: "UserRoles");

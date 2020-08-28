@@ -86,10 +86,11 @@ namespace libloaderapi
             services.AddApplicationInsightsTelemetry(Configuration["APPINSIGHTS_INSTRUMENTATIONKEY"]);
 
             services
-                .AddSingleton<IAnalyzerService, AnalyzerService>()
+                .AddSingleton<IAnalyserService, AnalyserService>()
                 .AddScoped<IAuthenticationService, AuthenticationService>()
                 .AddScoped<IUsersService, UsersService>()
-                .AddSingleton<IBlobService, BlobService>();
+                .AddSingleton<IBlobService, BlobService>()
+                .AddScoped<IClientsService, ClientsService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

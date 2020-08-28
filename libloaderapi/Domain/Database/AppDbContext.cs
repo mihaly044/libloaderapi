@@ -11,7 +11,7 @@ namespace libloaderapi.Domain.Database
 
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
-        public DbSet<Binary> Binaries { get; set; }
+        public DbSet<Client> Clients { get; set; }
         public DbSet<UserRole> UserRoles { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
@@ -34,9 +34,9 @@ namespace libloaderapi.Domain.Database
                 .WithMany(r => r.UserRoles)
                 .HasForeignKey(r => r.RoleId);
 
-            modelBuilder.Entity<Binary>()
+            modelBuilder.Entity<Client>()
                 .HasOne(u => u.User)
-                .WithMany(b => b.Binaries);
+                .WithMany(b => b.Clients);
 
             var roles = new[]
             {
@@ -49,9 +49,8 @@ namespace libloaderapi.Domain.Database
 
             var users = new[]
             {
-                new User { Name = "admin", Password = "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3"},
-                new User { Name = "user", Password = "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3"},
-                new User { Name = "client",  Password = "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3"}
+                new User { Name = "admin", Password = "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08"},
+                new User { Name = "user", Password = "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08"}
             };
             modelBuilder.Entity<User>()
                 .HasData(users);
