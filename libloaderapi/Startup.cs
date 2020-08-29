@@ -12,6 +12,7 @@ using Microsoft.OpenApi.Models;
 using Npgsql;
 using System;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace libloaderapi
 {
@@ -83,7 +84,7 @@ namespace libloaderapi
                 .AddDbContext<AppDbContext>(optionsBuilder => optionsBuilder.UseNpgsql(builder.ConnectionString))
                 .AddCors()
                 .AddRouting(opts => opts.LowercaseUrls = true)
-                .AddControllers();
+                .AddControllers().AddJsonOptions(opts => opts.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
             services.AddApplicationInsightsTelemetry(Configuration["APPINSIGHTS_INSTRUMENTATIONKEY"]);
 
             services
