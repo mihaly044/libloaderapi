@@ -95,6 +95,10 @@ namespace libloaderapi.Domain.Services
                     new Claim(ClaimTypes.Role, PredefinedRoles.Client),
                     new Claim(ClaimTypes.Name, client.Id.ToString())
                 }, DateTime.UtcNow.AddMinutes(10));
+
+                client.LastUsed = DateTime.UtcNow;
+                _context.Clients.Update(client);
+                await _context.SaveChangesAsync();
             }
             else
             {
