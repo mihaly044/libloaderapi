@@ -10,7 +10,7 @@ namespace libloaderapi.Utils
             if (!PeFile.TryParse(peStream, out var peFile))
                 return false;
 
-            return peFile != null && peFile.IsExe;
+            return peFile != null && peFile.IsExe && !peFile.IsDll;
         }
     }
 }
