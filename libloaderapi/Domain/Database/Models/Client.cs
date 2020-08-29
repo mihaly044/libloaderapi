@@ -6,8 +6,7 @@ namespace libloaderapi.Domain.Database.Models
 {
     public enum BucketType : ushort
     {
-        None = 0,
-        Development,
+        Development = 0,
         Production
     }
 
