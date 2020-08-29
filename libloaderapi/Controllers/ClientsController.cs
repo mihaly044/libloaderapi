@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net.Mime;
 using System.Threading.Tasks;
 using libloaderapi.Domain.Database.Models;
 using libloaderapi.Domain.Dto.Client;
@@ -31,17 +30,23 @@ namespace libloaderapi.Controllers
         }
 
         [HttpPost("register")]
-        [Consumes(MediaTypeNames.Application.Json)]
+        [Consumes("multipart/form-data")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesErrorResponseType(typeof(ClientRegistrationResult))]
-        public async Task<ActionResult<ClientRegistrationResult>> Register(ClientRegistrationRequest request)
+        public async Task<ActionResult<ClientRegistrationResult>> Register([FromForm] ClientRegistrationRequest request)
         {
             var result = await _clientsService.RegisterClient(request, Guid.Parse(User.Identity.Name!));
             if (result.Success)
-                return CreatedAtAction(nameof(Get), result);
-            else
-                return BadRequest(result);
+            {
+                return result.Skipped switch
+                {
+                    true => Ok(result),
+                    false => CreatedAtAction(nameof(Get), result)
+                };
+            }
+
+            return BadRequest(result);
         }
     }
 }

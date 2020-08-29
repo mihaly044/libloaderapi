@@ -20,10 +20,11 @@ namespace libloaderapi.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPost("authenticate")]
+        [HttpPost]
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesErrorResponseType(typeof(AuthResult))]
         public async Task<ActionResult<AuthResult>> Authenticate(AuthRequest request)
         {
             var result = await _authenticationService.AuthenticateAsync(request);
@@ -33,10 +34,11 @@ namespace libloaderapi.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPost("authenticate/client")]
+        [HttpPost("client")]
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesErrorResponseType(typeof(AuthResult))]
         public async Task<ActionResult<AuthResult>> Authenticate(ClientAuthRequest request)
         {
             var result = await _authenticationService.AuthenticateAsync(request);

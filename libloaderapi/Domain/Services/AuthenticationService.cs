@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using libloaderapi.Domain.Database;
 using libloaderapi.Domain.Database.Models;
 using libloaderapi.Domain.Dto.Auth;
 using libloaderapi.Utils;
+using Microsoft.AspNetCore.Razor.Language.CodeGeneration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -49,7 +51,9 @@ namespace libloaderapi.Domain.Services
         public async Task<AuthResult> AuthenticateAsync(AuthRequest request)
         {
             var result = new AuthResult();
-            var hashPass = CryptoUtils.Sha256(request.Password);
+            var hashPass = string.Concat(new SHA256Managed()
+                .ComputeHash(Encoding.UTF8.GetBytes(request.Password))
+                .Select(x => x.ToString("x2")));
 
             var user = await _context.Users.FirstOrDefaultAsync(x =>
                 x.Name == request.Username && hashPass == x.Password);
@@ -70,7 +74,6 @@ namespace libloaderapi.Domain.Services
         public async Task<AuthResult> AuthenticateAsync(ClientAuthRequest request)
         {
             var result = new AuthResult();
-
             var client = await _context.Clients
                 .FirstOrDefaultAsync(x => x.Sha256 == request.CryptoId);
 
@@ -81,7 +84,11 @@ namespace libloaderapi.Domain.Services
                 return result;
             }
 
-            if (client.Key == request.Digest)
+            var expectedDigest = string.Concat(new HMACSHA256(Encoding.UTF8.GetBytes(client.Key))
+                .ComputeHash(Encoding.UTF8.GetBytes(request.CryptoId))
+                .Select(x => x.ToString("x2")));
+
+            if (expectedDigest == request.Digest)
             {
                 result.Success = true;
                 result.Message = "OK";
