@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
 using libloaderapi.Domain.Database;
 using libloaderapi.Domain.Database.Models;
@@ -59,16 +57,16 @@ namespace libloaderapi.Domain.Services
             }
 
             peStream.Position = 0; // Rewind stream
-            var sha256 = string.Concat(new SHA256Managed()
-                .ComputeHash(peStream)
-                .Select(x => x.ToString("x2")));
-
-            var clients = await _context.Clients
+            var sha256Task = CryptoUtils.CalcSha256Hash(peStream);
+            var clientsTask = _context.Clients
                 .Where(x => x.UserId == userId)
                 .ToListAsync();
 
+            var clients = await clientsTask;
+            var sha256 = await sha256Task;
+
             // Check if we already have a client with the same hash
-            var matchingClient = clients.FirstOrDefault(x => x.Sha256 == sha256 && x.BucketType == request.Bucket);
+            var matchingClient = clients.FirstOrDefault( x => x.Sha256 == sha256 && x.BucketType == request.Bucket);
             if (matchingClient != null)
             {
                 result.Success = true;
@@ -98,7 +96,7 @@ namespace libloaderapi.Domain.Services
                 _context.Clients.Remove(clientsToDelete);
             }
 
-            var key = CryptoUtils.CreatePseudoRandomKey();
+            var key = await CryptoUtils.CreatePseudoRandomKey();
             await _context.Clients.AddAsync(new Client
             {
                 UserId = userId,
@@ -106,7 +104,6 @@ namespace libloaderapi.Domain.Services
                 Key = key,
                 BucketType = request.Bucket
             });
-
             await _context.SaveChangesAsync();
 
             result.ApiKey = key;
