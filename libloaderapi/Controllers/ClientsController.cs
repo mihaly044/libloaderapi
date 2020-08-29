@@ -34,6 +34,7 @@ namespace libloaderapi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesErrorResponseType(typeof(ClientRegistrationResult))]
         public async Task<ActionResult<ClientRegistrationResult>> Register([FromForm] ClientRegistrationRequest request)
         {
             var result = await _clientsService.RegisterClient(request, Guid.Parse(User.Identity.Name!));

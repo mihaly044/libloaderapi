@@ -1,5 +1,6 @@
 ﻿using libloaderapi.Domain.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace libloaderapi.Controllers
@@ -18,6 +19,7 @@ namespace libloaderapi.Controllers
         }
 
         [HttpGet("get/{name}")]
+        [ProducesResponseType(StatusCodes.Status301MovedPermanently)]
         public ActionResult<string> GetResource(string name)
         {
             var uri = _blobService.GetBlobDownloadUrl(name);
