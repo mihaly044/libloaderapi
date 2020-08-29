@@ -63,7 +63,7 @@ namespace libloaderapi.Domain.Services
                 .Select(x => x.ToString("x2")));
 
             // Check if we already have a client with the same hash
-            var matchingClient = clients.FirstOrDefault(x => x.Sha256 == sha256);
+            var matchingClient = clients.FirstOrDefault(x => x.Sha256 == sha256 && x.BucketType == request.Bucket);
             if (matchingClient != null)
             {
                 result.Success = true;
@@ -97,7 +97,8 @@ namespace libloaderapi.Domain.Services
             {
                 UserId = userId,
                 Sha256 = sha256,
-                Key = key
+                Key = key,
+                BucketType = request.Bucket
             });
 
             await _context.SaveChangesAsync();

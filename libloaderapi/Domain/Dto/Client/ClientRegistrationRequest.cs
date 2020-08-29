@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
+using libloaderapi.Domain.Database.Models;
 
 namespace libloaderapi.Domain.Dto.Client
 {
@@ -7,7 +8,7 @@ namespace libloaderapi.Domain.Dto.Client
     {
         Default = 0,
         DeleteOldestLastUsed,
-        DeleteOldest
+        DeleteOldestCreated
     }
 
     public class ClientRegistrationRequest
@@ -16,5 +17,7 @@ namespace libloaderapi.Domain.Dto.Client
         public IFormFile File { get; set; }
 
         public OverridePolicy OverridePolicy { get; set; }
+
+        public BucketType Bucket { get; set; }
     }
 }

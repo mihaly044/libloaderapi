@@ -4,6 +4,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace libloaderapi.Domain.Database.Models
 {
+    public enum BucketType : ushort
+    {
+        None = 0,
+        Development,
+        Production
+    }
+
     public class Client
     {
         [Required]
@@ -23,6 +30,8 @@ namespace libloaderapi.Domain.Database.Models
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public DateTime? LastUsed { get; set; }
+
+        public BucketType BucketType { get; set; }
 
         [System.Text.Json.Serialization.JsonIgnore]
         public Guid UserId { get; set; }
