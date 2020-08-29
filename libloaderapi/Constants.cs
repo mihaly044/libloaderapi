@@ -2,7 +2,8 @@
 {
     public class Constants
     {
-        public const uint MaxClientsPerUser = 2;
+        public const uint MaxClientsInDevBucket = 10;
+        public const uint MaxClientsInProductionBucket = 2;
         public const string TokenIssuer = "api.libloader.net";
         public static string BlobContainer = "Serve";
     }

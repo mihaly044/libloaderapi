@@ -50,10 +50,7 @@ namespace libloaderapi.Domain.Services
             }
 
             // Calculate the SHA256 hash of the client file
-            var peStream = new MemoryStream();
-            await request.File.CopyToAsync(peStream);
-            peStream.Position = 0; // Rewind stream
-
+            var peStream = request.File.OpenReadStream();
             if (!PeUtils.IsValidExe(peStream))
             {
                 result.Success = false;
@@ -81,7 +78,8 @@ namespace libloaderapi.Domain.Services
                 return result;
             }
 
-            if (clients.Count >= Constants.MaxClientsPerUser)
+            if (clients.Count >= (request.Bucket == BucketType.Development 
+                ? Constants.MaxClientsInDevBucket : Constants.MaxClientsInProductionBucket))
             {
                 if (request.OverridePolicy == OverridePolicy.Default)
                 {
