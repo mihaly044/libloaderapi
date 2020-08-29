@@ -20,6 +20,8 @@ services:
     hostname: db
     restart: always
     hostname: db
+    ports:
+      - 5432:5432/tcp
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=boo
