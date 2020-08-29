@@ -49,18 +49,26 @@ namespace libloaderapi.Domain.Services
                 return result;
             }
 
+            // Calculate the SHA256 hash of the client file
+            var peStream = new MemoryStream();
+            await request.File.CopyToAsync(peStream);
+            peStream.Position = 0; // Rewind stream
+
+            if (!PeUtils.IsValidExe(peStream))
+            {
+                result.Success = false;
+                result.Message = "Invalid file";
+                return result;
+            }
+
+            peStream.Position = 0; // Rewind stream
+            var sha256 = string.Concat(new SHA256Managed()
+                .ComputeHash(peStream)
+                .Select(x => x.ToString("x2")));
+
             var clients = await _context.Clients
                 .Where(x => x.UserId == userId)
                 .ToListAsync();
-
-            // Calculate the SHA256 hash of the client file
-            var stream = new MemoryStream();
-            await request.File.CopyToAsync(stream);
-            stream.Position = 0; // Rewind stream
-
-            var sha256 = string.Concat(new SHA256Managed()
-                .ComputeHash(stream)
-                .Select(x => x.ToString("x2")));
 
             // Check if we already have a client with the same hash
             var matchingClient = clients.FirstOrDefault(x => x.Sha256 == sha256 && x.BucketType == request.Bucket);
