@@ -14,7 +14,7 @@ namespace libloaderapi.Domain.Services
         /// Get a list of all the users
         /// </summary>
         /// <returns></returns>
-        Task<IList<User>> GetAsync();
+        Task<IEnumerable<User>> GetAsync();
 
         /// <summary>
         /// Get a specific user by <paramref name="userId"/>
@@ -40,7 +40,7 @@ namespace libloaderapi.Domain.Services
             _appDbContext = appDbContext;
         }
 
-        public async Task<IList<User>> GetAsync()
+        public async Task<IEnumerable<User>> GetAsync()
         {
             return await _appDbContext.Users.ToListAsync();
         }
