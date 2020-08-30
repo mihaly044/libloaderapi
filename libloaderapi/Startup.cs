@@ -11,8 +11,10 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Npgsql;
 using System;
+using System.Net;
 using System.Text;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.HttpOverrides;
 
 namespace libloaderapi
 {
@@ -114,6 +116,14 @@ namespace libloaderapi
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "libloader API V1");
+            });
+
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.All,
+                RequireHeaderSymmetry = false,
+                ForwardLimit = null,
+                KnownProxies = { IPAddress.Parse("127.0.0.1") },
             });
 
             app.UseRouting();

@@ -13,9 +13,11 @@ namespace libloaderapi.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            Response.StatusCode = StatusCodes.Status501NotImplemented;
+            /*Response.StatusCode = StatusCodes.Status501NotImplemented;
             Response.ContentType = "text/plain";
-            return new EmptyResult();
+            return new EmptyResult();*/
+
+            return Ok(HttpContext.Connection.RemoteIpAddress.ToString());
         }
     }
 }
