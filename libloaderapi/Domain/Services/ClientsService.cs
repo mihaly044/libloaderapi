@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using libloaderapi.Common;
+using libloaderapi.Common.Dto.Client;
 using libloaderapi.Domain.Database;
 using libloaderapi.Domain.Database.Models;
-using libloaderapi.Domain.Dto.Client;
 using libloaderapi.Utils;
 using Microsoft.EntityFrameworkCore;
 

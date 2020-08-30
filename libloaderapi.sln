@@ -7,6 +7,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "libloaderapi", "libloaderap
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{DD269EB4-7B3D-47FF-9FD7-CD2A2E654823}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "libloaderapi.Common", "libloaderapi.Common\libloaderapi.Common.csproj", "{6736C2EE-753E-414A-AEAC-BB7E586588FC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "libloaderapi-cli", "libloaderapi-cli\libloaderapi-cli.csproj", "{90AB9CAF-9D97-486B-BFCF-FAFEB1B50796}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{DD269EB4-7B3D-47FF-9FD7-CD2A2E654823}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DD269EB4-7B3D-47FF-9FD7-CD2A2E654823}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DD269EB4-7B3D-47FF-9FD7-CD2A2E654823}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6736C2EE-753E-414A-AEAC-BB7E586588FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6736C2EE-753E-414A-AEAC-BB7E586588FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6736C2EE-753E-414A-AEAC-BB7E586588FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6736C2EE-753E-414A-AEAC-BB7E586588FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{90AB9CAF-9D97-486B-BFCF-FAFEB1B50796}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90AB9CAF-9D97-486B-BFCF-FAFEB1B50796}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90AB9CAF-9D97-486B-BFCF-FAFEB1B50796}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90AB9CAF-9D97-486B-BFCF-FAFEB1B50796}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

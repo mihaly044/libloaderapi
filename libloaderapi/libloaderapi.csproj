@@ -41,4 +41,8 @@
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.7.1" />
     <PackageReference Include="System.Linq" Version="4.3.0" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\libloaderapi.Common\libloaderapi.Common.csproj" />
+  </ItemGroup>
 </Project>

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace libloaderapi.Domain.Dto.Client
+﻿namespace libloaderapi.Common.Dto.Client
 {
     public class ClientRegistrationResult : ApiResponse
     {

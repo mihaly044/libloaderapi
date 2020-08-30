@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace libloaderapi.Domain.Dto.Auth
+namespace libloaderapi.Common.Dto.Auth
 {
     public class AuthRequest
     {

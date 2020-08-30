@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
-using libloaderapi.Domain.Database.Models;
 
-namespace libloaderapi.Domain.Dto.Client
+namespace libloaderapi.Common.Dto.Client
 {
     public enum OverridePolicy : ushort
     {

@@ -1,15 +1,10 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using libloaderapi.Common;
 
 namespace libloaderapi.Domain.Database.Models
 {
-    public enum BucketType : ushort
-    {
-        Development = 0,
-        Production
-    }
-
     public class Client
     {
         [Required]

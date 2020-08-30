@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Net.Mime;
 using System.Threading.Tasks;
+using libloaderapi.Common.Dto.Auth;
+using libloaderapi.Common.Dto.Client;
+using libloaderapi.Domain;
 using libloaderapi.Domain.Attributes;
 using libloaderapi.Domain.Database.Models;
-using libloaderapi.Domain.Dto.Auth;
-using libloaderapi.Domain.Dto.Client;
 using libloaderapi.Domain.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;

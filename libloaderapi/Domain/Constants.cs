@@ -1,4 +1,4 @@
-﻿namespace libloaderapi
+﻿namespace libloaderapi.Domain
 {
     public class Constants
     {

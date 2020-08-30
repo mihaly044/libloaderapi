@@ -1,4 +1,4 @@
-﻿namespace libloaderapi.Domain.Dto
+﻿namespace libloaderapi.Common.Dto
 {
     public abstract class ApiResponse
     {

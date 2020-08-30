@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace libloaderapi.Domain.Dto.Client
+namespace libloaderapi.Common.Dto.Client
 {
     public class AnalyserContext
     {
