@@ -87,7 +87,6 @@ namespace libloaderapi
                 .AddCors()
                 .AddRouting(opts => opts.LowercaseUrls = true)
                 .AddControllers().AddJsonOptions(opts => opts.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
-
             services.AddApplicationInsightsTelemetry(Configuration["APPINSIGHTS_INSTRUMENTATIONKEY"]);
 
             services
@@ -96,13 +95,6 @@ namespace libloaderapi
                 .AddScoped<IUsersService, UsersService>()
                 .AddSingleton<IBlobService, BlobService>()
                 .AddScoped<IClientsService, ClientsService>();
-
-            services.Configure<ForwardedHeadersOptions>(options =>
-            {
-                options.ForwardedForHeaderName = "X-Forwarded-For";
-                options.ForwardedProtoHeaderName = "X-Forwarded-Proto";
-                options.KnownNetworks.Add(new IPNetwork(IPAddress.Parse("192.168.80.0"), 24));
-            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -124,6 +116,14 @@ namespace libloaderapi
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "libloader API V1");
+            });
+
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.All,
+                RequireHeaderSymmetry = false,
+                ForwardLimit = null,
+                KnownProxies = { IPAddress.Parse("127.0.0.1") },
             });
 
             app.UseRouting();
