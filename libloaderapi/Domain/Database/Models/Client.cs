@@ -26,10 +26,12 @@ namespace libloaderapi.Domain.Database.Models
         [Column(TypeName = "varchar(128)")]
         public string Key { get; set; }
 
+        [Required]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public DateTime? LastUsed { get; set; }
 
+        [Required]
         public BucketType BucketType { get; set; }
 
         [System.Text.Json.Serialization.JsonIgnore]
