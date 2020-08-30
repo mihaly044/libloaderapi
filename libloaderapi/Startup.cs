@@ -13,6 +13,7 @@ using Npgsql;
 using System;
 using System.Text;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.HttpOverrides;
 
 namespace libloaderapi
 {
@@ -28,6 +29,12 @@ namespace libloaderapi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.ForwardedHeaders =
+                    ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+            });
+
             services.AddSwaggerGen(c =>
             {
                 c.SchemaFilter<EnumSchemaFilter>();
@@ -98,6 +105,8 @@ namespace libloaderapi
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, AppDbContext context)
         {
+            app.UseForwardedHeaders();
+
             context.Database.Migrate();
 
             if (env.IsDevelopment())
