@@ -29,20 +29,16 @@ namespace libloaderapi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Add swagger config
+            services.AddCustomSwaggerConfig();
+
+            // Forward headers
             services.Configure<ForwardedHeadersOptions>(options =>
             {
                 options.ForwardedHeaders =
                     ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
             });
 
-            var builder = new NpgsqlConnectionStringBuilder
-            {
-                ConnectionString = Configuration.GetConnectionString("Postgres"),
-                Username = Configuration["UserID"],
-                Password = Configuration["Password"]
-            };
-
-            services.AddCustomSwaggerConfig();
 
             services.AddAuthentication(x =>
             {
@@ -62,27 +58,41 @@ namespace libloaderapi
                  };
              });
 
-            services
-                .AddDbContext<AppDbContext>(optionsBuilder => optionsBuilder.UseNpgsql(builder.ConnectionString))
-                .AddCors()
-                .AddRouting(opts => opts.LowercaseUrls = true)
-                .AddControllers().AddJsonOptions(opts => opts.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
-            services.AddApplicationInsightsTelemetry(Configuration["APPINSIGHTS_INSTRUMENTATIONKEY"]);
+            // DB
+            var builder = new NpgsqlConnectionStringBuilder
+            {
+                ConnectionString = Configuration.GetConnectionString("Postgres"),
+                Username = Configuration["UserID"],
+                Password = Configuration["Password"]
+            };
+            services.AddDbContext<AppDbContext>(optionsBuilder => 
+                optionsBuilder.UseNpgsql(builder.ConnectionString));
 
+            services.AddCors();
+
+            services
+                .AddRouting(opts => opts.LowercaseUrls = true)
+                .AddControllers().AddJsonOptions(opts =>
+                    opts.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+            
+            // Custom services
             services
                 .AddSingleton<IAnalyserService, AnalyserService>()
                 .AddScoped<IAuthenticationService, AuthenticationService>()
                 .AddScoped<IUsersService, UsersService>()
                 .AddSingleton<IBlobService, BlobService>()
                 .AddScoped<IClientsService, ClientsService>();
+
+            // Telemetry
+            services.AddApplicationInsightsTelemetry(Configuration["APPINSIGHTS_INSTRUMENTATIONKEY"]);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, AppDbContext context)
         {
-            app.UseForwardedHeaders();
-
             context.Database.Migrate();
+
+            app.UseForwardedHeaders();
 
             if (env.IsDevelopment())
             {
