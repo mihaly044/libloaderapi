@@ -18,7 +18,10 @@ namespace libloaderapi.Domain.Middlewares
         public async Task InvokeAsync(HttpContext context, IClientsService clientsService)
         {
             if (!context.User.IsInRole(PredefinedRoles.Client))
+            {
                 await _next(context);
+                return;
+            }
 
             if(!Guid.TryParse(context.User.Identity.Name, out var clientId))
             {
