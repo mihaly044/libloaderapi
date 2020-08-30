@@ -122,7 +122,6 @@ namespace libloaderapi.Domain.Services
 
         private string GenerateToken(IEnumerable<Claim> claims, DateTime? expires = null)
         {
-            expires = DateTime.UtcNow.AddYears(1);
             var tokenHandler = new JwtSecurityTokenHandler();
             var tokenDescriptor = new SecurityTokenDescriptor
             {
