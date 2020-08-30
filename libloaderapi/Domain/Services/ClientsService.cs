@@ -12,13 +12,13 @@ namespace libloaderapi.Domain.Services
 {
     public interface IClientsService
     {
-        Task<ClientRegistrationResult> RegisterClient(ClientRegistrationRequest request, Guid userId);
+        Task<ClientRegistrationResult> RegisterClient(ClientRegistrationRequest request, Guid userId, string ipAddress);
 
         Task<IEnumerable<Client>> GetAsync();
 
         Task<IEnumerable<Client>> GetByUserAsync(Guid userId);
 
-        Task<IEnumerable<Client>> GetByClientIdAsync(Guid clientId);
+        Task<Client> GetByClientIdAsync(Guid clientId);
 
         Task<Client> GetBySha256Async(string sha256);
     }
@@ -34,7 +34,7 @@ namespace libloaderapi.Domain.Services
             _userUsersService = userUsersService;
         }
 
-        public async Task<ClientRegistrationResult> RegisterClient(ClientRegistrationRequest request, Guid userId)
+        public async Task<ClientRegistrationResult> RegisterClient(ClientRegistrationRequest request, Guid userId, string ipAddress)
         {
             var user = await _userUsersService.GetAsync(userId);
             var result = new ClientRegistrationResult();
@@ -102,7 +102,8 @@ namespace libloaderapi.Domain.Services
                 UserId = userId,
                 Sha256 = sha256,
                 Key = key,
-                BucketType = request.Bucket
+                BucketType = request.Bucket,
+                RegistrantIp = ipAddress
             });
             await _context.SaveChangesAsync();
 
@@ -124,11 +125,10 @@ namespace libloaderapi.Domain.Services
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Client>> GetByClientIdAsync(Guid clientId)
+        public async Task<Client> GetByClientIdAsync(Guid clientId)
         {
             return await _context.Clients
-                .Where(x => x.Id == clientId)
-                .ToListAsync();
+                .FirstOrDefaultAsync(x => x.Id == clientId);
         }
 
         public async Task<Client> GetBySha256Async(string sha256)
