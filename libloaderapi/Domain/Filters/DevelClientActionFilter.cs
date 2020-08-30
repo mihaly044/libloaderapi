@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Net.Mime;
 using System.Reflection;
 using System.Threading.Tasks;
 using libloaderapi.Domain.Attributes;
