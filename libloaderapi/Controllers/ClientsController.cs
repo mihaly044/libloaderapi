@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net.Mime;
 using System.Threading.Tasks;
+using libloaderapi.Domain.Attributes;
 using libloaderapi.Domain.Database.Models;
 using libloaderapi.Domain.Dto.Auth;
 using libloaderapi.Domain.Dto.Client;
@@ -71,6 +72,8 @@ namespace libloaderapi.Controllers
 
             return BadRequest(result);
         }
+        
+        [DevelClientRestricted]
         [Authorize(Roles = PredefinedRoles.Client)]
         [HttpPost("analyze")]
         public ActionResult<ulong> Analyze(AnalyserContext req)

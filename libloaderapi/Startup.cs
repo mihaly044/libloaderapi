@@ -12,7 +12,7 @@ using Npgsql;
 using System.Text;
 using System.Text.Json.Serialization;
 using libloaderapi.Domain.Extensions.Configuration;
-using libloaderapi.Domain.Middlewares;
+using libloaderapi.Domain.Filters;
 using Microsoft.AspNetCore.HttpOverrides;
 
 namespace libloaderapi
@@ -72,7 +72,8 @@ namespace libloaderapi
 
             services
                 .AddRouting(opts => opts.LowercaseUrls = true)
-                .AddControllers().AddJsonOptions(opts =>
+                .AddControllers(opts => opts.Filters.Add<DevelClientActionFilter>())
+                .AddJsonOptions(opts => 
                     opts.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
             
             // Custom services
@@ -118,8 +119,6 @@ namespace libloaderapi
 
             app.UseAuthentication();
             app.UseAuthorization();
-
-            app.UseDevClientRestrictions();
 
             app.UseEndpoints(endpoints =>
             {

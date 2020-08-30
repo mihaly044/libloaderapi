@@ -1,4 +1,5 @@
-﻿using libloaderapi.Domain.Services;
+﻿using libloaderapi.Domain.Attributes;
+using libloaderapi.Domain.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -7,6 +8,7 @@ namespace libloaderapi.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)]
     [Authorize(Roles = PredefinedRoles.Client)]
+    [DevelClientRestricted]
     [Route("[controller]")]
     [ApiController]
     public class AssetsController : ControllerBase
