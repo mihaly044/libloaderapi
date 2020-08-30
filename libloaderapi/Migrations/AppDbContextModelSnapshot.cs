@@ -39,6 +39,11 @@ namespace libloaderapi.Migrations
                     b.Property<DateTime?>("LastUsed")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<string>("RegistrantIp")
+                        .IsRequired()
+                        .HasColumnType("varchar(128)")
+                        .HasMaxLength(128);
+
                     b.Property<string>("Sha256")
                         .IsRequired()
                         .HasColumnType("varchar(64)")
@@ -72,17 +77,17 @@ namespace libloaderapi.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("00771ea4-a5d7-417c-bd14-b37146b0b1ed"),
+                            Id = new Guid("cbe24cd4-ff5c-46bf-a439-925d27801fd0"),
                             Name = "LibAdmin"
                         },
                         new
                         {
-                            Id = new Guid("1d1ea70c-2999-403c-bb8a-185feee3d625"),
+                            Id = new Guid("2f484d7d-4dee-43a6-879c-f52f7eaef704"),
                             Name = "LibUser"
                         },
                         new
                         {
-                            Id = new Guid("9ecb0a15-7464-408a-8e9e-0791125eb91b"),
+                            Id = new Guid("f3c4187f-802d-4246-ae57-5cba7de0f40c"),
                             Name = "LibClient"
                         });
                 });
@@ -116,15 +121,15 @@ namespace libloaderapi.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("03f09698-7c52-4657-b650-59b9f2af0d1d"),
-                            CreatedAt = new DateTime(2020, 8, 29, 23, 47, 7, 664, DateTimeKind.Utc).AddTicks(1575),
+                            Id = new Guid("4c7f78f3-0672-4677-9906-fdef5ff356ec"),
+                            CreatedAt = new DateTime(2020, 8, 30, 13, 32, 9, 497, DateTimeKind.Utc).AddTicks(1592),
                             Name = "admin",
                             Password = "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08"
                         },
                         new
                         {
-                            Id = new Guid("b5324445-d79a-457a-ab63-3a56d443a964"),
-                            CreatedAt = new DateTime(2020, 8, 29, 23, 47, 7, 664, DateTimeKind.Utc).AddTicks(2566),
+                            Id = new Guid("364c3f87-9c5c-49be-a33e-7941701d5ed5"),
+                            CreatedAt = new DateTime(2020, 8, 30, 13, 32, 9, 497, DateTimeKind.Utc).AddTicks(2481),
                             Name = "user",
                             Password = "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08"
                         });
@@ -147,13 +152,13 @@ namespace libloaderapi.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = new Guid("03f09698-7c52-4657-b650-59b9f2af0d1d"),
-                            RoleId = new Guid("00771ea4-a5d7-417c-bd14-b37146b0b1ed")
+                            UserId = new Guid("4c7f78f3-0672-4677-9906-fdef5ff356ec"),
+                            RoleId = new Guid("cbe24cd4-ff5c-46bf-a439-925d27801fd0")
                         },
                         new
                         {
-                            UserId = new Guid("b5324445-d79a-457a-ab63-3a56d443a964"),
-                            RoleId = new Guid("1d1ea70c-2999-403c-bb8a-185feee3d625")
+                            UserId = new Guid("364c3f87-9c5c-49be-a33e-7941701d5ed5"),
+                            RoleId = new Guid("2f484d7d-4dee-43a6-879c-f52f7eaef704")
                         });
                 });
 

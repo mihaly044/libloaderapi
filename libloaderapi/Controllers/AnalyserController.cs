@@ -8,7 +8,6 @@ namespace libloaderapi.Controllers
     [Authorize(Roles = PredefinedRoles.Client)]
     [Route("[controller]")]
     [ApiController]
-    [ApiExplorerSettings(IgnoreApi = true)]
     public class AnalyserController : ControllerBase
     {
         private readonly IAnalyserService _analyserService;
@@ -33,6 +32,12 @@ namespace libloaderapi.Controllers
             }
 
             return BadRequest("400 Bad request");
+        }
+
+        [HttpGet("test")]
+        public ActionResult<string> Test()
+        {
+            return Ok("test");
         }
     }
 }

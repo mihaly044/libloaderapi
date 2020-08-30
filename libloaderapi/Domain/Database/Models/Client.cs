@@ -32,6 +32,11 @@ namespace libloaderapi.Domain.Database.Models
         public DateTime? LastUsed { get; set; }
 
         [Required]
+        [MaxLength(128)]
+        [Column(TypeName = "varchar(128)")]
+        public string RegistrantIp { get; set; }
+
+        [Required]
         public BucketType BucketType { get; set; }
 
         [System.Text.Json.Serialization.JsonIgnore]

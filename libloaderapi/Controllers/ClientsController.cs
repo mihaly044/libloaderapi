@@ -37,7 +37,7 @@ namespace libloaderapi.Controllers
         [ProducesErrorResponseType(typeof(ClientRegistrationResult))]
         public async Task<ActionResult<ClientRegistrationResult>> Register([FromForm] ClientRegistrationRequest request)
         {
-            var result = await _clientsService.RegisterClient(request, Guid.Parse(User.Identity.Name!));
+            var result = await _clientsService.RegisterClient(request, Guid.Parse(User.Identity.Name!), GetIpAddress());
             if (result.Success)
             {
                 return result.Skipped switch
@@ -48,6 +48,13 @@ namespace libloaderapi.Controllers
             }
 
             return BadRequest(result);
+        }
+
+        private string GetIpAddress()
+        {
+            return HttpContext.Request.Headers.TryGetValue("X-Real-IP", out var ipAddress)
+                ? ipAddress.ToString()
+                : HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString();
         }
     }
 }

@@ -13,6 +13,7 @@ using Npgsql;
 using System;
 using System.Text;
 using System.Text.Json.Serialization;
+using libloaderapi.Domain.Middlewares;
 using Microsoft.AspNetCore.HttpOverrides;
 
 namespace libloaderapi
@@ -133,6 +134,8 @@ namespace libloaderapi
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseDevClientRestrictions();
 
             app.UseEndpoints(endpoints =>
             {
