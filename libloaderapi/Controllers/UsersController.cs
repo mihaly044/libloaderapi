@@ -1,5 +1,8 @@
-﻿using System.Net.Mime;
+﻿using System;
+using System.Net.Mime;
 using System.Threading.Tasks;
+using libloaderapi.Domain.Attributes;
+using libloaderapi.Domain.Database.Models;
 using libloaderapi.Domain.Dto.Auth;
 using libloaderapi.Domain.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -13,10 +16,12 @@ namespace libloaderapi.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IAuthenticationService _authenticationService;
+        private readonly IUsersService _usersService;
 
-        public UsersController(IAuthenticationService authenticationService)
+        public UsersController(IAuthenticationService authenticationService, IUsersService usersService)
         {
             _authenticationService = authenticationService;
+            _usersService = usersService;
         }
 
         [AllowAnonymous]
@@ -31,6 +36,18 @@ namespace libloaderapi.Controllers
             if (result.Success)
                 return Ok(result);
             return BadRequest(result);
+        }
+
+        [HttpGet("myself")]
+        [Role(PredefinedRoles.User, PredefinedRoles.Admin)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [Consumes(MediaTypeNames.Application.Json)]
+        public async Task<ActionResult<User>> GetMyself()
+        {
+            var result = await _usersService.GetAsync(Guid.Parse(User.Identity.Name!));
+            if (result != null)
+                return Ok(result);
+            return NotFound();
         }
     }
 }
