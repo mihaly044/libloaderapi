@@ -71,12 +71,11 @@ namespace libloaderapi.Controllers
 
             return BadRequest(result);
         }
-
         [Authorize(Roles = PredefinedRoles.Client)]
         [HttpPost("analyze")]
         public ActionResult<ulong> Analyze(AnalyserContext req)
         {
-            if (req.Iter == 1)
+            if (req.Iter == 0)
             {
                 if (_analyserService.Iter0(req.Payload, out var result))
                     return Ok(result);
