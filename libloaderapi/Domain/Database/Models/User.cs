@@ -21,6 +21,7 @@ namespace libloaderapi.Domain.Database.Models
         [Column(TypeName = "varchar(64)")]
         public string Password { get; set; }
 
+        [Required]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public DateTime? LastLogin { get; set; }
