@@ -18,7 +18,7 @@ namespace libloaderapi.Controllers
             _blobService = blobService;
         }
 
-        [HttpGet("get/{name}")]
+        [HttpGet("{name}")]
         [ProducesResponseType(StatusCodes.Status301MovedPermanently)]
         public ActionResult<string> GetResource(string name)
         {

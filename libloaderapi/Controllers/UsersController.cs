@@ -20,7 +20,7 @@ namespace libloaderapi.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPost]
+        [HttpPost("authenticate")]
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
