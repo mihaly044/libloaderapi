@@ -8,11 +8,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 using Npgsql;
-using System;
 using System.Text;
 using System.Text.Json.Serialization;
+using libloaderapi.Domain.Extensions.Configuration;
 using libloaderapi.Domain.Middlewares;
 using Microsoft.AspNetCore.HttpOverrides;
 
@@ -36,39 +35,14 @@ namespace libloaderapi
                     ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
             });
 
-            services.AddSwaggerGen(c =>
-            {
-                c.SchemaFilter<EnumSchemaFilter>();
-                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-                {
-                    Description = "JWT Authorization header using the Bearer scheme (Example: 'Bearer 12345abcdef')",
-                    Name = "Authorization",
-                    In = ParameterLocation.Header,
-                    Type = SecuritySchemeType.ApiKey,
-                    Scheme = "Bearer"
-                });
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
-                    {
-                        new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference
-                            {
-                                Type = ReferenceType.SecurityScheme,
-                                Id = "Bearer"
-                            }
-                        },
-                        Array.Empty<string>()
-                    }
-                });
-            });
-
             var builder = new NpgsqlConnectionStringBuilder
             {
                 ConnectionString = Configuration.GetConnectionString("Postgres"),
                 Username = Configuration["UserID"],
                 Password = Configuration["Password"]
             };
+
+            services.AddCustomSwaggerConfig();
 
             services.AddAuthentication(x =>
             {
