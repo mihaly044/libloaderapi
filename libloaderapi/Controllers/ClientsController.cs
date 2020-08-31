@@ -44,7 +44,8 @@ namespace libloaderapi.Controllers
                 Key = c.Key,
                 LastUsed = c.LastUsed,
                 RegistrantIp = c.RegistrantIp,
-                Sha256 = c.Sha256
+                Sha256 = c.Sha256,
+                Tag = c.Tag
             }));
         }
 
@@ -59,6 +60,20 @@ namespace libloaderapi.Controllers
                 return Unauthorized();
 
             await _clientsService.DeleteAsync(clientId);
+            return Ok();
+        }
+
+        [Authorize(Roles = PredefinedRoles.User)]
+        [HttpDelete("/tag/{tag}")]
+        public async Task<ActionResult> DeleteClientByTag(string tag)
+        {
+            var isOwnClient = (await _clientsService.GetByTagAsync(tag)).UserId ==
+                              Guid.Parse(User.Identity.Name!);
+
+            if (!isOwnClient)
+                return Unauthorized();
+
+            await _clientsService.DeleteByTagAsync(tag);
             return Ok();
         }
 

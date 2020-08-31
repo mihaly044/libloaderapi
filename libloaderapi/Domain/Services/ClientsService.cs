@@ -7,6 +7,7 @@ using libloaderapi.Common.Dto.Client;
 using libloaderapi.Domain.Database;
 using libloaderapi.Domain.Database.Models;
 using libloaderapi.Utils;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace libloaderapi.Domain.Services
@@ -24,6 +25,10 @@ namespace libloaderapi.Domain.Services
         Task<IEnumerable<Client>> GetBySha256Async(string sha256);
 
         Task DeleteAsync(Guid clientId);
+
+        Task DeleteByTagAsync(string tag);
+
+        Task<Client> GetByTagAsync(string tag);
     }
 
     public class ClientsService : IClientsService
@@ -50,7 +55,7 @@ namespace libloaderapi.Domain.Services
                 return result;
             }
 
-            // Calculate the SHA256 hash of the client file
+            // Check if this is a valid exe
             var peStream = request.File.OpenReadStream();
             if (!PeUtils.IsValidExe(peStream))
             {
@@ -59,6 +64,18 @@ namespace libloaderapi.Domain.Services
                 return result;
             }
 
+            // Check if we have a matching tag
+            if (!string.IsNullOrEmpty(request.Tag))
+            {
+                if ((await GetByTagAsync(request.Tag)) != null)
+                {
+                    result.Success = false;
+                    result.Message = "A client with this tag already exists.";
+                    return result;
+                }
+            }
+
+            // Calculate the SHA256 hash of the client file
             peStream.Position = 0; // Rewind stream
             var sha256Task = CryptoUtils.CalcSha256Hash(peStream);
             var clientsTask = _context.Clients
@@ -146,6 +163,20 @@ namespace libloaderapi.Domain.Services
                 .SingleAsync(x => x.Id == clientId);
             _context.Remove(clientToDelete);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteByTagAsync(string tag)
+        {
+            var clientToDelete = await _context.Clients
+                .SingleAsync(x => x.Tag == tag);
+            _context.Remove(clientToDelete);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<Client> GetByTagAsync(string tag)
+        {
+            return await _context.Clients
+                .SingleOrDefaultAsync(x => x.Tag == tag);
         }
     }
 }
