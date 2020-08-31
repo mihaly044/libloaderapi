@@ -26,6 +26,7 @@ namespace libloaderapi.Domain.Database.Models
 
         public DateTime? LastUsed { get; set; }
 
+        [MinLength(3)]
         [MaxLength(32)]
         [Column(TypeName = "varchar(32)")]
         public string Tag { get; set; }

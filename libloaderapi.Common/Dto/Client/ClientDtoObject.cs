@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace libloaderapi.Common.Dto.Client
 {
@@ -18,6 +19,7 @@ namespace libloaderapi.Common.Dto.Client
 
         public BucketType BucketType { get; set; }
 
+        [MinLength(3)]
         public string Tag { get; set; }
     }
 }
