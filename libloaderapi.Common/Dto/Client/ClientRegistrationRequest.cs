@@ -15,6 +15,8 @@ namespace libloaderapi.Common.Dto.Client
         [Required]
         public IFormFile File { get; set; }
 
+        public string Tag { get; set; }
+
         public OverridePolicy OverridePolicy { get; set; }
 
         public BucketType Bucket { get; set; }

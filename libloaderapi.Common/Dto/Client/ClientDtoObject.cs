@@ -17,5 +17,7 @@ namespace libloaderapi.Common.Dto.Client
         public string RegistrantIp { get; set; }
 
         public BucketType BucketType { get; set; }
+
+        public string Tag { get; set; }
     }
 }
