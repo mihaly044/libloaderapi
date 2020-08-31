@@ -122,7 +122,8 @@ namespace libloaderapi.Domain.Services
                 Sha256 = sha256,
                 Key = key,
                 BucketType = request.Bucket,
-                RegistrantIp = ipAddress
+                RegistrantIp = ipAddress,
+                Tag = request.Tag
             });
             await _context.SaveChangesAsync();
 
