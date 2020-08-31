@@ -145,6 +145,7 @@ namespace libloaderapi.Domain.Services
             var clientToDelete = await _context.Clients
                 .SingleAsync(x => x.Id == clientId);
             _context.Remove(clientToDelete);
+            await _context.SaveChangesAsync();
         }
     }
 }
