@@ -7,7 +7,6 @@ using libloaderapi.Common.Dto.Auth;
 using libloaderapi.Common.Dto.Client;
 using libloaderapi.Domain;
 using libloaderapi.Domain.Attributes;
-using libloaderapi.Domain.Database.Models;
 using libloaderapi.Domain.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
