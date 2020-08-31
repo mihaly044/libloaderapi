@@ -50,7 +50,7 @@ namespace libloaderapi.Controllers
         }
 
         [Authorize(Roles = PredefinedRoles.User)]
-        [HttpDelete("/id/{clientId}")]
+        [HttpDelete("id/{clientId}")]
         public async Task<ActionResult> DeleteClientById(Guid clientId)
         {
             var isOwnClient = (await _clientsService.GetByClientIdAsync(clientId)).UserId ==
@@ -64,7 +64,7 @@ namespace libloaderapi.Controllers
         }
 
         [Authorize(Roles = PredefinedRoles.User)]
-        [HttpDelete("/tag/{tag}")]
+        [HttpDelete("tag/{tag}")]
         public async Task<ActionResult> DeleteClientByTag(string tag)
         {
             var isOwnClient = (await _clientsService.GetByTagAsync(tag)).UserId ==
