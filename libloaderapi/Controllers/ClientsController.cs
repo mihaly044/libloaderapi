@@ -93,6 +93,13 @@ namespace libloaderapi.Controllers
             return BadRequest("400 Bad request");
         }
 
+        [HttpGet("time")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public ActionResult<DateTime> Time()
+        {
+            return Ok(DateTime.UtcNow);
+        }
+
         private string GetIpAddress()
         {
             return HttpContext.Request.Headers.TryGetValue("X-Real-IP", out var ipAddress)
