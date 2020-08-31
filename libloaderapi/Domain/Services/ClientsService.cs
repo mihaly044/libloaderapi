@@ -24,7 +24,7 @@ namespace libloaderapi.Domain.Services
 
         Task<IEnumerable<Client>> GetBySha256Async(string sha256);
 
-        Task DeleteAsync(Guid clientId);
+        Task DeleteByIdAsync(Guid clientId);
 
         Task DeleteByTagAsync(string tag);
 
@@ -157,7 +157,7 @@ namespace libloaderapi.Domain.Services
                 .Where(x => x.Sha256 == sha256).ToListAsync();
         }
 
-        public async Task DeleteAsync(Guid clientId)
+        public async Task DeleteByIdAsync(Guid clientId)
         {
             var clientToDelete = await _context.Clients
                 .SingleAsync(x => x.Id == clientId);

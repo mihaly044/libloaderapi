@@ -51,7 +51,7 @@ namespace libloaderapi.Controllers
 
         [Authorize(Roles = PredefinedRoles.User)]
         [HttpDelete("/id/{clientId}")]
-        public async Task<ActionResult> DeleteClientByTag(Guid clientId)
+        public async Task<ActionResult> DeleteClientById(Guid clientId)
         {
             var isOwnClient = (await _clientsService.GetByClientIdAsync(clientId)).UserId ==
                               Guid.Parse(User.Identity.Name!);
@@ -59,7 +59,7 @@ namespace libloaderapi.Controllers
             if (!isOwnClient)
                 return Unauthorized();
 
-            await _clientsService.DeleteAsync(clientId);
+            await _clientsService.DeleteByIdAsync(clientId);
             return Ok();
         }
 
