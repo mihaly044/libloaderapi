@@ -21,7 +21,7 @@ namespace libloaderapi.Domain.Services
 
         Task<Client> GetByClientIdAsync(Guid clientId);
 
-        Task<Client> GetBySha256Async(string sha256);
+        Task<IEnumerable<Client>> GetBySha256Async(string sha256);
 
         Task DeleteAsync(Guid clientId);
     }
@@ -134,10 +134,10 @@ namespace libloaderapi.Domain.Services
                 .FirstOrDefaultAsync(x => x.Id == clientId);
         }
 
-        public async Task<Client> GetBySha256Async(string sha256)
+        public async Task<IEnumerable<Client>> GetBySha256Async(string sha256)
         {
             return await _context.Clients
-                .FirstOrDefaultAsync(x => x.Sha256 == sha256);
+                .Where(x => x.Sha256 == sha256).ToListAsync();
         }
 
         public async Task DeleteAsync(Guid clientId)
