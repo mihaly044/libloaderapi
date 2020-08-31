@@ -1,16 +1,31 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Threading;
+using System.Reflection;
 using System.Threading.Tasks;
 using CommandLine;
+using ConsoleTables;
 using libloaderapi.Common.Dto.Auth;
+using libloaderapi.Common.Dto.Client;
+using Pastel;
 
 namespace libloaderapi_cli
 {
+    public static class CanBeNullEx
+    {
+        public static string CanBeNull(this object x)
+        {
+            return !(x is string) ? "N/A" : x.ToString();
+        }
+    }
+
     class Program
     {
         /// <summary>
@@ -18,9 +33,51 @@ namespace libloaderapi_cli
         /// </summary>
         private static readonly HttpClient Client = new HttpClient();
 
-        static async Task Main(string[] args)
+        /// <summary>
+        /// Contains the file name to save the token into
+        /// </summary>
+        private const string TokenFileName = "token.txt";
+
+        /// <summary>
+        /// The token handler object for parsing JWT tokens
+        /// </summary>
+        private static JwtSecurityTokenHandler _tokenHandler;
+
+        /// <summary>
+        /// The object holding an access token
+        /// </summary>
+        private static JwtSecurityToken _token;
+
+        /// <summary>
+        /// Checks if we have a valid token already
+        /// </summary>
+        /// <returns></returns>
+        private static bool CheckToken()
         {
-            // Initialize the client
+            if (_token == null)
+            {
+                Console.WriteLine(
+                    $"{"[error]".Pastel(Color.Red)} You do not seem to have a token. Please get one using the login command.");
+                return false;
+            }
+
+            var time = DateTime.UtcNow;
+            if (_token.ValidFrom > time || _token.ValidTo < time)
+            {
+                Console.WriteLine(
+                    $"{"[error]".Pastel(Color.Red)} Your token appears to be invalid. Please re-authenticate yourself with the login command.");
+                return false;
+            }
+
+            return true;
+        }
+
+        private static async Task Main(string[] args)
+        {
+            // Setting up the token handler
+            _tokenHandler = new JwtSecurityTokenHandler();
+
+            // Setting up the http client here
             Client.BaseAddress = new Uri("https://api.libloader.net");
             Client.DefaultRequestHeaders.Accept.Clear();
             Client.DefaultRequestHeaders.Accept.Add(
@@ -28,44 +85,179 @@ namespace libloaderapi_cli
             Client.DefaultRequestHeaders.Accept.Add(
                 new MediaTypeWithQualityHeaderValue("text/plain"));
 
-            // Parse the login command
-            await Parser.Default.ParseArguments<LoginCommand>(args).WithParsedAsync(async opts =>
+            // Set the user-agent
+            var header = new ProductHeaderValue("libloaderapi-cli",
+                Assembly.GetExecutingAssembly().GetName().Version?.ToString());
+            var userAgent = new ProductInfoHeaderValue(header);
+            Client.DefaultRequestHeaders.UserAgent.Add(userAgent);
+
+            // Check if we have a token saved already
+            if (File.Exists(TokenFileName))
             {
-                var response = await Client.PostAsJsonAsync("/users/authenticate", new AuthRequest
+                var token = await File.ReadAllTextAsync(TokenFileName);
+                _token = _tokenHandler.ReadJwtToken(token);
+                Client.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Bearer", token);
+            }
+
+            // Parse args
+            var parserResult = Parser.Default.ParseArguments<LoginCommand, RegisterClientCommand, ListClientsCommand,
+                                                             DeleteClientCommand>(args);
+            await parserResult.WithParsedAsync<LoginCommand>(OnLoginCommand);
+            await parserResult.WithParsedAsync<RegisterClientCommand>(OnRegisterClientCommand);
+            await parserResult.WithParsedAsync<ListClientsCommand>(OnListClientsCommand);
+            await parserResult.WithParsedAsync<DeleteClientCommand>(OnDeleteClientCommand);
+        }
+
+        /// <summary>
+        /// Processes the login command
+        /// </summary>
+        /// <param name="arg"></param>
+        /// <returns></returns>
+        private static async Task OnLoginCommand(LoginCommand arg)
+        {
+            var response = await Client.PostAsJsonAsync("/users/authenticate", new AuthRequest
+            {
+                Username = arg.Username,
+                Password = arg.Password
+            });
+
+            var result = await response.Content.ReadAsAsync<AuthResult>();
+
+            if (result.Success)
+            {
+                _token = _tokenHandler.ReadJwtToken(result.Token);
+                
+                Client.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Bearer", result.Token);
+
+                if (!arg.NoCache)
+                    await File.WriteAllTextAsync(TokenFileName, result.Token);
+
+                Console.WriteLine(
+                    $"{"[success]".Pastel(Color.Lime)} Successfully logged in as {arg.Username.Pastel(Color.DarkCyan)}, " +
+                    $"session will expire at {_token.ValidTo.ToLocalTime().ToString(CultureInfo.CurrentCulture).Pastel(Color.DarkCyan)} local time.\n" +
+                    $"Your token has been saved to {Path.Join(Environment.CurrentDirectory, TokenFileName).Pastel(Color.DarkCyan)}");
+            }
+            else
+            {
+                Console.WriteLine(
+                    $"{"[error]".Pastel(Color.Red)} An error has occurred: {response.StatusCode}, {result.Message}.");
+            }
+        }
+
+        /// <summary>
+        /// Processes the client-register command
+        /// </summary>
+        /// <param name="arg"></param>
+        /// <returns></returns>
+        private static async Task OnRegisterClientCommand(RegisterClientCommand arg)
+        {
+            if (arg.Token != null)
+                _token = _tokenHandler.ReadJwtToken(arg.Token);
+
+            if (!CheckToken())
+                 return;
+
+            await using var fs = File.OpenRead(arg.File);
+            var content = new MultipartFormDataContent
+            {
+                { new StringContent(arg.OverridePolicy.ToString()), "OverridePolicy" },
+                { new StringContent(arg.Bucket.ToString()), "Bucket" },
+                { new StreamContent(fs), "\"File\"", $"\"{Path.GetFileName(arg.File)}\""}
+            };
+
+            if(!string.IsNullOrEmpty(arg.Tag))
+                content.Add(new StringContent(arg.Tag), "Tag");
+
+            var response = await Client.PostAsync("/clients/register", content);
+
+            var result = await response.Content.ReadAsAsync<ClientRegistrationResult>();
+
+            if (response.IsSuccessStatusCode)
+            {
+                switch (response.StatusCode)
                 {
-                    Username = opts.Username,
-                    Password = opts.Password
-                });
+                    case HttpStatusCode.Created:
+                        Console.WriteLine(
+                            $"{"[success]".Pastel(Color.Lime)} Client Successfully registered to be used in the " +
+                            $"{arg.Bucket.ToString().Pastel(Color.Yellow)} bucket.\nKey={result.ApiKey.Pastel(Color.DarkCyan)}");
+                        break;
+                    case HttpStatusCode.OK when result.Skipped:
+                        Console.WriteLine($"{"[warning]".Pastel(Color.Orange)} You have already registered this client. Skipping.");
+                        break;
+                }
+            }
+            else if (result != null)
+            {
+                Console.WriteLine($"{"[error]".Pastel(Color.Red)} {result.Message}");
+            }
+            else
+            {
+                Console.WriteLine($"{"[error]".Pastel(Color.Red)} {response.StatusCode}");
+            }
+        }
 
-                var result = await response.Content.ReadAsAsync<AuthResult>();
+        private static async Task OnListClientsCommand(ListClientsCommand arg)
+        {
+            if (arg.Token != null)
+                _token = _tokenHandler.ReadJwtToken(arg.Token);
 
-                if (result.Success)
+            if (!CheckToken())
+                return;
+
+            var response = await Client.GetAsync("/clients");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var clients = await response.Content.ReadAsAsync<IList<ClientDtoObject>>();
+                if (clients.Any())
                 {
-                    var handler = new JwtSecurityTokenHandler();
-                    var jwtSecurityToken = handler.ReadToken(result.Token) as JwtSecurityToken;
+                    Console.WriteLine(
+                        $"{"[information]".Pastel(Color.Cyan)} You have {clients.Count.ToString().Pastel(Color.DarkCyan)} clients total.");
 
-
-                    Console.WriteLine($"Token will expire at UTC {jwtSecurityToken.ValidTo}");
-                    Console.WriteLine("Your token has the following claims:");
-
-                    foreach (var claim in jwtSecurityToken.Claims.Select(x => $"{x.Type}={x.Value}"))
+                    var table = new ConsoleTable("Guid", "Tag", "Bucket", "Created", "LastUsed", "RegistrantIp")
                     {
-                        Console.WriteLine(claim);
+                        Options =
+                        {
+                            EnableCount = false
+                        }
+                    };
+
+                    foreach (var client in clients)
+                    {
+                        table.AddRow(client.Id, client.Tag.CanBeNull(),
+                            client.BucketType.ToString(), client.CreatedAt, client.LastUsed.CanBeNull(), client.RegistrantIp);
                     }
 
-                    Console.WriteLine($"\r\nToken={result.Token}");
-
-
-                    /*if (!opts.DropToken)
-                    {
-                        await File.WriteAllTextAsync("user_token.txt", result.Token);
-                    }*/
+                    table.Write();
                 }
                 else
                 {
-                    Console.WriteLine($"{response.StatusCode}, {result.Message}");
+                    Console.WriteLine($"{"[information]".Pastel(Color.Cyan)} You do not have any clients registered.");
                 }
-            });
+            }
+            else
+            {
+                Console.WriteLine($"{"[error]".Pastel(Color.Red)} {response.StatusCode}");
+            }
+            
+        }
+
+        private static async Task OnDeleteClientCommand(DeleteClientCommand arg)
+        {
+            if (arg.Token != null)
+                _token = _tokenHandler.ReadJwtToken(arg.Token);
+
+            if (!CheckToken())
+                return;
+
+            var endpoint = !string.IsNullOrEmpty(arg.Tag) ? $"/clients/tag/{arg.Tag}" : $"/clients/id/{arg.Id}";
+            var response = await Client.DeleteAsync(endpoint);
+
+            Console.WriteLine(response.IsSuccessStatusCode
+                ? $"{"[success]".Pastel(Color.Lime)} Client has been deleted."
+                : $"{"[error]".Pastel(Color.Red)} {response.StatusCode}");
         }
     }
 }
