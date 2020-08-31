@@ -7,7 +7,6 @@ using libloaderapi.Common.Dto.Client;
 using libloaderapi.Domain.Database;
 using libloaderapi.Domain.Database.Models;
 using libloaderapi.Utils;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace libloaderapi.Domain.Services
