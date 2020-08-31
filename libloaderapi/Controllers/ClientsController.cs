@@ -48,6 +48,20 @@ namespace libloaderapi.Controllers
             }));
         }
 
+        [Authorize(Roles = PredefinedRoles.User)]
+        [HttpDelete("{clientId}")]
+        public async Task<ActionResult> DeleteClient(Guid clientId)
+        {
+            var isOwnClient = (await _clientsService.GetByClientIdAsync(clientId)).UserId ==
+                              Guid.Parse(User.Identity.Name!);
+
+            if (!isOwnClient)
+                return Unauthorized();
+
+            await _clientsService.DeleteAsync(clientId);
+            return Ok();
+        }
+
         [AllowAnonymous]
         [HttpPost("authenticate")]
         [Consumes(MediaTypeNames.Application.Json)]
