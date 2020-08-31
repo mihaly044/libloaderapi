@@ -69,7 +69,7 @@ namespace libloaderapi.Domain.Services
             var sha256 = await sha256Task;
 
             // Check if we already have a client with the same hash
-            var matchingClient = clients.FirstOrDefault( x => x.Sha256 == sha256 && x.BucketType == request.Bucket);
+            var matchingClient = clients.FirstOrDefault( x => x.Sha256 == sha256 && x.BucketType == request.Bucket && x.UserId == user.Id);
             if (matchingClient != null)
             {
                 result.Success = true;
