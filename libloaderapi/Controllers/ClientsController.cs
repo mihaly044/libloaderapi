@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Mime;
 using System.Threading.Tasks;
 using libloaderapi.Common.Dto.Auth;
@@ -33,9 +34,19 @@ namespace libloaderapi.Controllers
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [Authorize(Roles = PredefinedRoles.User)]
-        public async Task<ActionResult<IEnumerable<Client>>> Get()
+        public async Task<ActionResult<IEnumerable<ClientDtoObject>>> Get()
         {
-            return Ok(await _clientsService.GetByUserAsync(Guid.Parse(User.Identity.Name!)));
+            var clients = await _clientsService.GetByUserAsync(Guid.Parse(User.Identity.Name!));
+            return Ok(clients.Select(c => new ClientDtoObject
+            {
+                Id = c.Id,
+                BucketType = c.BucketType,
+                CreatedAt = c.CreatedAt,
+                Key = c.Key,
+                LastUsed = c.LastUsed,
+                RegistrantIp = c.RegistrantIp,
+                Sha256 = c.Sha256
+            }));
         }
 
         [AllowAnonymous]
