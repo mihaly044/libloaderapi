@@ -53,10 +53,11 @@ namespace libloaderapi.Controllers
         [HttpDelete("id/{clientId}")]
         public async Task<ActionResult> DeleteClientById(Guid clientId)
         {
-            var isOwnClient = (await _clientsService.GetByClientIdAsync(clientId)).UserId ==
-                              Guid.Parse(User.Identity.Name!);
+            var client = await _clientsService.GetByClientIdAsync(clientId);
+            if (client == null)
+                return NotFound();
 
-            if (!isOwnClient)
+            if (client.UserId != Guid.Parse(User.Identity.Name!))
                 return Unauthorized();
 
             await _clientsService.DeleteByIdAsync(clientId);
@@ -67,10 +68,11 @@ namespace libloaderapi.Controllers
         [HttpDelete("tag/{tag}")]
         public async Task<ActionResult> DeleteClientByTag(string tag)
         {
-            var isOwnClient = (await _clientsService.GetByTagAsync(tag)).UserId ==
-                              Guid.Parse(User.Identity.Name!);
+            var client = await _clientsService.GetByTagAsync(tag);
+            if (client == null)
+                return NotFound();
 
-            if (!isOwnClient)
+            if (client.UserId != Guid.Parse(User.Identity.Name!))
                 return Unauthorized();
 
             await _clientsService.DeleteByTagAsync(tag);
