@@ -78,7 +78,7 @@ namespace libloaderapi.Domain.Services
             peStream.Position = 0; // Rewind stream
             var sha256Task = CryptoUtils.CalcSha256Hash(peStream);
             var clientsTask = _context.Clients
-                .Where(x => x.UserId == userId)
+                .Where(x => x.UserId == userId && x.BucketType == request.Bucket)
                 .ToListAsync();
 
             var clients = await clientsTask;
