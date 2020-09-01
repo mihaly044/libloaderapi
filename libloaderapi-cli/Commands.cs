@@ -59,7 +59,10 @@ namespace libloaderapi_cli
     [Verb("client-tag", HelpText = "Append a tag to the client or modify an existing one")]
     public class TagClientCommand : AuthorizedActionCommand
     {
-        [Option('t', "tag", Default = null, HelpText = "The ASCII string of max 32 letters that identifies the client.")]
+        [Option('i', "id", Required = true, HelpText = "The ID of the target client")]
+        public Guid Id { get; set; }
+
+        [Option('t', "tag", Required = true, HelpText = "The ASCII string of max 32 letters that identifies the client.")]
         public string Tag { get; set; }
     }
 }

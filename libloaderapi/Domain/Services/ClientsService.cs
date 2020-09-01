@@ -28,6 +28,8 @@ namespace libloaderapi.Domain.Services
         Task DeleteByTagAsync(string tag);
 
         Task<Client> GetByTagAsync(string tag);
+
+        Task UpdateTagAsync(Guid clientId, string tag);
     }
 
     public class ClientsService : IClientsService
@@ -177,6 +179,13 @@ namespace libloaderapi.Domain.Services
         {
             return await _context.Clients
                 .SingleOrDefaultAsync(x => x.Tag == tag);
+        }
+
+        public async Task UpdateTagAsync(Guid clientId, string tag)
+        {
+            var client = await GetByClientIdAsync(clientId);
+            client.Tag = tag;
+            await _context.SaveChangesAsync();
         }
     }
 }

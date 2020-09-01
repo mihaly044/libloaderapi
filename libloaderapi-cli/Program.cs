@@ -9,6 +9,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CommandLine;
 using ConsoleTables;
@@ -32,6 +33,11 @@ namespace libloaderapi_cli
         /// This one client is going to be used throughout the entire lifetime of the app
         /// </summary>
         private static readonly HttpClient Client = new HttpClient();
+
+        /// <summary>
+        /// The API endpoint URI
+        /// </summary>
+        private const string ApiUrl = "http://localhost:32768";
 
         /// <summary>
         /// Contains the file name to save the token into
@@ -62,14 +68,11 @@ namespace libloaderapi_cli
             }
 
             var time = DateTime.UtcNow;
-            if (_token.ValidFrom > time || _token.ValidTo < time)
-            {
-                Console.WriteLine(
-                    $"{"[error]".Pastel(Color.Red)} Your token appears to be invalid. Please re-authenticate yourself with the login command.");
-                return false;
-            }
+            if (_token.ValidFrom <= time && _token.ValidTo >= time) return true;
+            Console.WriteLine(
+                $"{"[error]".Pastel(Color.Red)} Your token appears to be invalid. Please re-authenticate yourself with the login command.");
+            return false;
 
-            return true;
         }
 
         private static async Task Main(string[] args)
@@ -78,7 +81,7 @@ namespace libloaderapi_cli
             _tokenHandler = new JwtSecurityTokenHandler();
 
             // Setting up the http client here
-            Client.BaseAddress = new Uri("https://api.libloader.net");
+            Client.BaseAddress = new Uri(ApiUrl);
             Client.DefaultRequestHeaders.Accept.Clear();
             Client.DefaultRequestHeaders.Accept.Add(
                 new MediaTypeWithQualityHeaderValue("application/json"));
@@ -101,12 +104,41 @@ namespace libloaderapi_cli
             }
 
             // Parse args
-            var parserResult = Parser.Default.ParseArguments<LoginCommand, RegisterClientCommand, ListClientsCommand,
-                                                             DeleteClientCommand>(args);
+            if (args.Length == 0)
+            {
+                Console.WriteLine(
+                    $"Welcome to the {"Libloaderapi".Pastel(Color.Chartreuse)} interactive shell. " +
+                    $"Please enter your commands below or type {"help".Pastel(Color.Aqua)} to get help.\nType exit to quit the shell.");
+
+                var regex = new Regex("[\\\"\"].+?[\\\"\"]|[^ ]+");
+
+                while (true)
+                {
+                    Console.Write($"{"api".Pastel(Color.Coral)}{"> ".Pastel(Color.Yellow)}");
+                    var command = Console.ReadLine();
+                    var c = regex.Matches(command!).Select(x => x.Value).ToArray();
+                    if (command.Trim() != "exit")
+                        await Parse(c);
+                    else
+                        return;
+                }
+            }
+            else
+            {
+                await Parse(args);
+            }
+        }
+
+        private static async Task Parse(IEnumerable<string> args)
+        {
+            var parserResult =
+                Parser.Default
+                    .ParseArguments<LoginCommand, RegisterClientCommand, ListClientsCommand, DeleteClientCommand, TagClientCommand>(args);
             await parserResult.WithParsedAsync<LoginCommand>(OnLoginCommand);
             await parserResult.WithParsedAsync<RegisterClientCommand>(OnRegisterClientCommand);
             await parserResult.WithParsedAsync<ListClientsCommand>(OnListClientsCommand);
             await parserResult.WithParsedAsync<DeleteClientCommand>(OnDeleteClientCommand);
+            await parserResult.WithParsedAsync<TagClientCommand>(OnTagClientCommand);
         }
 
         /// <summary>
@@ -258,6 +290,30 @@ namespace libloaderapi_cli
             Console.WriteLine(response.IsSuccessStatusCode
                 ? $"{"[success]".Pastel(Color.Lime)} Client has been deleted."
                 : $"{"[error]".Pastel(Color.Red)} {response.StatusCode}");
+        }
+
+        /// <summary>
+        /// Processes the tag client command
+        /// </summary>
+        /// <param name="arg"></param>
+        /// <returns></returns>
+        private static async Task OnTagClientCommand(TagClientCommand arg)
+        {
+            if (arg.Token != null)
+                _token = _tokenHandler.ReadJwtToken(arg.Token);
+
+            if (!CheckToken())
+                return;
+
+            var response = await Client.PostAsJsonAsync("/clients/tag", new ClientDtoObject
+            {
+                Id = arg.Id,
+                Tag = arg.Tag
+            });
+
+            Console.WriteLine(response.IsSuccessStatusCode
+                ? $"{"[success]".Pastel(Color.Lime)} Client tag successfully updated."
+                : $"{"[error]".Pastel(Color.Red)} An error has occurred: {response.StatusCode}");
         }
     }
 }

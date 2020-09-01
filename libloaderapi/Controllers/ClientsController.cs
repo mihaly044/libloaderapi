@@ -79,6 +79,25 @@ namespace libloaderapi.Controllers
             return Ok();
         }
 
+        [Authorize(Roles = PredefinedRoles.User)]
+        [HttpPost("tag")]
+        public async Task<ActionResult> EditClientTag(ClientDtoObject dtoObject)
+        {
+            var client = await _clientsService.GetByClientIdAsync(dtoObject.Id);
+            if (client == null)
+                return NotFound();
+
+            if (client.UserId != Guid.Parse(User.Identity.Name!))
+                return Unauthorized();
+
+            var clientsWithThisTag = await _clientsService.GetByTagAsync(dtoObject.Tag);
+            if (clientsWithThisTag != null)
+                return Conflict("A client with this tag already exists.");
+
+            await _clientsService.UpdateTagAsync(dtoObject.Id, dtoObject.Tag);
+            return Ok();
+        }
+
         [AllowAnonymous]
         [HttpPost("authenticate")]
         [Consumes(MediaTypeNames.Application.Json)]
