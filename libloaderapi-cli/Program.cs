@@ -37,7 +37,7 @@ namespace libloaderapi_cli
         /// <summary>
         /// The API endpoint URI
         /// </summary>
-        private const string ApiUrl = "http://localhost:32768";
+        private const string ApiUrl = "https://api.libloader.net";
 
         /// <summary>
         /// Contains the file name to save the token into
@@ -131,14 +131,16 @@ namespace libloaderapi_cli
 
         private static async Task Parse(IEnumerable<string> args)
         {
-            var parserResult =
-                Parser.Default
-                    .ParseArguments<LoginCommand, RegisterClientCommand, ListClientsCommand, DeleteClientCommand, TagClientCommand>(args);
-            await parserResult.WithParsedAsync<LoginCommand>(OnLoginCommand);
-            await parserResult.WithParsedAsync<RegisterClientCommand>(OnRegisterClientCommand);
-            await parserResult.WithParsedAsync<ListClientsCommand>(OnListClientsCommand);
-            await parserResult.WithParsedAsync<DeleteClientCommand>(OnDeleteClientCommand);
-            await parserResult.WithParsedAsync<TagClientCommand>(OnTagClientCommand);
+            await Parser.Default
+                .ParseArguments<LoginCommand, RegisterClientCommand, ListClientsCommand, 
+                    DeleteClientCommand, TagClientCommand>(args)
+                .MapResult(
+                    (LoginCommand opts) => OnLoginCommand(opts),
+                    (RegisterClientCommand opts) => OnRegisterClientCommand(opts),
+                    (ListClientsCommand opts) => OnListClientsCommand(opts),
+                    (DeleteClientCommand opts) => OnDeleteClientCommand(opts),
+                    (TagClientCommand opts) => OnTagClientCommand(opts),
+                    errs => Task.FromResult(0));
         }
 
         /// <summary>
