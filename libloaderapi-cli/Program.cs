@@ -45,6 +45,11 @@ namespace libloaderapi_cli
         private const string TokenFileName = "token.txt";
 
         /// <summary>
+        /// Contains the full path to the token file
+        /// </summary>
+        private static string _tokenFilePath;
+
+        /// <summary>
         /// The token handler object for parsing JWT tokens
         /// </summary>
         private static JwtSecurityTokenHandler _tokenHandler;
@@ -94,10 +99,12 @@ namespace libloaderapi_cli
             var userAgent = new ProductInfoHeaderValue(header);
             Client.DefaultRequestHeaders.UserAgent.Add(userAgent);
 
+            _tokenFilePath = Path.Join(Environment.CurrentDirectory, TokenFileName);
+
             // Check if we have a token saved already
-            if (File.Exists(TokenFileName))
+            if (File.Exists(_tokenFilePath))
             {
-                var token = await File.ReadAllTextAsync(TokenFileName);
+                var token = await File.ReadAllTextAsync(_tokenFilePath);
                 _token = _tokenHandler.ReadJwtToken(token);
                 Client.DefaultRequestHeaders.Authorization =
                     new AuthenticationHeaderValue("Bearer", token);
@@ -166,12 +173,12 @@ namespace libloaderapi_cli
                     new AuthenticationHeaderValue("Bearer", result.Token);
 
                 if (!arg.NoCache)
-                    await File.WriteAllTextAsync(TokenFileName, result.Token);
+                    await File.WriteAllTextAsync(_tokenFilePath, result.Token);
 
                 Console.WriteLine(
                     $"{"[success]".Pastel(Color.Lime)} Successfully logged in as {arg.Username.Pastel(Color.DarkCyan)}, " +
                     $"session will expire at {_token.ValidTo.ToLocalTime().ToString(CultureInfo.CurrentCulture).Pastel(Color.DarkCyan)} local time.\n" +
-                    $"Your token has been saved to {Path.Join(Environment.CurrentDirectory, TokenFileName).Pastel(Color.DarkCyan)}");
+                    $"Your token has been saved to {_tokenFilePath.Pastel(Color.DarkCyan)}");
             }
             else
             {
@@ -261,7 +268,7 @@ namespace libloaderapi_cli
                     foreach (var client in clients)
                     {
                         table.AddRow(client.Id, client.Tag.CanBeNull(),
-                            client.BucketType.ToString(), client.CreatedAt, client.LastUsed.CanBeNull(), client.RegistrantIp);
+                            client.BucketType.ToString(), client.CreatedAt, client.LastUsed);
                     }
 
                     table.Write();
