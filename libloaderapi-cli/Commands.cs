@@ -7,7 +7,7 @@ namespace libloaderapi_cli
 {
     public abstract class AuthorizedActionCommand
     {
-        [Option('X', "token", Required = false, Default = null, HelpText = "Use a token other than the one in the cache.")]
+        [Option('X', "token", Required = false, Default = null, HelpText = "Log in using a token instead of an username and password.")]
         public string Token { get; set; }
     }
 
