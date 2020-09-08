@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "libloaderapi-cli": {
+      "commandName": "Project",
+      "workingDirectory": "$(OutDir)"
+    }
+  }
+}

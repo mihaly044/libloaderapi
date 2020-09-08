@@ -7,9 +7,9 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using libloaderapi.Common.Dto.Auth;
+using libloaderapi.Common.Utils;
 using libloaderapi.Domain.Database;
 using libloaderapi.Domain.Database.Models;
-using libloaderapi.Utils;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -83,7 +83,7 @@ namespace libloaderapi.Domain.Services
                 return result;
             }
 
-            var expectedDigest = string.Concat(new HMACSHA256(Encoding.ASCII.GetBytes(client.Key))
+            var expectedDigest = string.Concat(new HMACSHA256(client.Key)
                 .ComputeHash(HexUtils.HexStringToByteArray(request.CryptoId))
                 .Select(x => x.ToString("x2")));
 

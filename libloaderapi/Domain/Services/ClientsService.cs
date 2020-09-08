@@ -117,7 +117,7 @@ namespace libloaderapi.Domain.Services
                 _context.Clients.Remove(clientsToDelete);
             }
 
-            var key = await CryptoUtils.CreatePseudoRandomKey();
+            var key =  CryptoUtils.CreatePseudoRandomKey();
             await _context.Clients.AddAsync(new Client
             {
                 UserId = userId,

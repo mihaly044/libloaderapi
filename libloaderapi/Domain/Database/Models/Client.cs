@@ -17,9 +17,8 @@ namespace libloaderapi.Domain.Database.Models
         public string Sha256 { get; set; }
 
         [Required]
-        [MaxLength(128)]
-        [Column(TypeName = "varchar(128)")]
-        public string Key { get; set; }
+        [Column(TypeName = "varchar(172)")]
+        public byte[] Key { get; set; }
 
         [Required]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

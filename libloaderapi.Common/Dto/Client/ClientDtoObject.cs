@@ -9,7 +9,7 @@ namespace libloaderapi.Common.Dto.Client
 
         public string Sha256 { get; set; }
 
-        public string Key { get; set; }
+        public byte[] Key { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 

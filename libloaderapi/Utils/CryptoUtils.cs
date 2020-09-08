@@ -1,24 +1,19 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace libloaderapi.Utils
 {
     public static class CryptoUtils
     {
-        public static async Task<string> CreatePseudoRandomKey()
+        public static byte[] CreatePseudoRandomKey()
         {
             using var rng = new RNGCryptoServiceProvider();
-            var key = new byte[63];
+            var key = new byte[128];
             rng.GetBytes(key);
-            var regex = new Regex("[^a-z0-9 ]",
-                RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
-
-            return await Task.FromResult(regex.Replace(Convert.ToBase64String(key), "q"));
+            return key;
         }
 
         public static async Task<string> CalcSha256Hash(string password)

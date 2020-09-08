@@ -38,6 +38,15 @@ namespace libloaderapi_cli
 
         [Option('t', "tag", Default = null, HelpText = "An optional ASCII string of max 32 letters that identifies the client.")]
         public string Tag { get; set; }
+
+        [Option('k', "keyfile", Default = null, Required = false, HelpText = "If specified, the keyfile will be saved to this location instead of the target executable folder.")]
+        public string Keyfile { get; set; }
+
+        [Option('p', "print-key", Default = false, Required = false, HelpText = "(Not recommended) Prints the API key to the console in a hex-encoded string format")]
+        public bool PrintKeyfile { get; set; }
+
+        [Option('s', "save-key", Default = true, Required = false, HelpText = "Save the resulting key")]
+        public bool Save { get; set; }
     }
 
     [Verb("client-list", HelpText = "List all the clients tied to your account.")]

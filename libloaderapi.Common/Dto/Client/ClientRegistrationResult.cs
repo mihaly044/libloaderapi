@@ -2,7 +2,7 @@
 {
     public class ClientRegistrationResult : ApiResponse
     {
-        public string ApiKey { get; set; }
+        public byte[] ApiKey { get; set; }
         public bool Skipped { get; set; }
     }
 }

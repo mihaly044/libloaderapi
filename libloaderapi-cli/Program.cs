@@ -15,6 +15,7 @@ using CommandLine;
 using ConsoleTables;
 using libloaderapi.Common.Dto.Auth;
 using libloaderapi.Common.Dto.Client;
+using libloaderapi.Common.Utils;
 using Pastel;
 
 namespace libloaderapi_cli
@@ -220,9 +221,25 @@ namespace libloaderapi_cli
                 switch (response.StatusCode)
                 {
                     case HttpStatusCode.Created:
+
+                        if (arg.Save)
+                        {
+                            var keyFilePath = !string.IsNullOrEmpty(arg.Keyfile)
+                                ? arg.Keyfile
+                                : Path.Join(Path.GetDirectoryName(arg.File), "loader.dat");
+
+                            await File.WriteAllBytesAsync(keyFilePath, result.ApiKey);
+                        }
+
                         Console.WriteLine(
                             $"{"[success]".Pastel(Color.Lime)} Client Successfully registered to be used in the " +
-                            $"{arg.Bucket.ToString().Pastel(Color.Yellow)} bucket.\nKey={result.ApiKey.Pastel(Color.DarkCyan)}");
+                            $"{arg.Bucket.ToString().Pastel(Color.Yellow)} bucket.");
+
+
+                        if (arg.PrintKeyfile)
+                        {
+                            Console.WriteLine($"ApiKey={HexUtils.ByteArrayToHexString(result.ApiKey).Pastel(Color.DarkCyan)}");
+                        }
                         break;
                     case HttpStatusCode.OK when result.Skipped:
                         Console.WriteLine($"{"[warning]".Pastel(Color.Orange)} You have already registered this client. Skipping.");
@@ -257,7 +274,7 @@ namespace libloaderapi_cli
                     Console.WriteLine(
                         $"{"[information]".Pastel(Color.Cyan)} You have {clients.Count.ToString().Pastel(Color.DarkCyan)} clients total.");
 
-                    var table = new ConsoleTable("Guid", "Tag", "Bucket", "Created", "LastUsed", "RegistrantIp")
+                    var table = new ConsoleTable("Guid", "Tag", "Bucket", "Created", "LastUsed")
                     {
                         Options =
                         {
