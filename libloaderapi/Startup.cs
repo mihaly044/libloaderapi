@@ -81,7 +81,6 @@ namespace libloaderapi
                 .AddSingleton<IAnalyserService, AnalyserService>()
                 .AddScoped<IAuthenticationService, AuthenticationService>()
                 .AddScoped<IUsersService, UsersService>()
-                .AddSingleton<IBlobService, BlobService>()
                 .AddScoped<IClientsService, ClientsService>();
 
             // Telemetry
