@@ -3,7 +3,7 @@
     public class Constants
     {
         public const uint MaxClientsInDevBucket = 10;
-        public const uint MaxClientsInProductionBucket = 2;
+        public const uint MaxClientsInProductionBucket = 5;
         public const string TokenIssuer = "api.libloader.net";
     }
 
