@@ -12,13 +12,13 @@ namespace libloaderapi.Domain.Database.Models
         public Guid Id { get; set; } = Guid.NewGuid();
 
         [Required]
-        [MaxLength(64)]
-        [Column(TypeName = "varchar(64)")]
-        public string Sha256 { get; set; }
+        [MaxLength(28)]
+        [Column(TypeName = "varchar(28)")]
+        public string Digest { get; set; }
 
         [Required]
         [Column(TypeName = "varchar(172)")]
-        public byte[] Key { get; set; }
+        public byte[] ApiKey { get; set; }
 
         [Required]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

@@ -58,10 +58,10 @@ namespace libloaderapi.Domain.Filters
                                                                     "Please re-upload your client to the Production bucket.\n");
                         return;
                     }
-
-                    // Devel restrictions doesn't apply, continue.
-                    await next();
                 }
+
+                // Devel restrictions doesn't apply, continue.
+                await next();
             }
             else
             {

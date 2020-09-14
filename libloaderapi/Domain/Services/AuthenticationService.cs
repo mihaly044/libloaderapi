@@ -74,7 +74,7 @@ namespace libloaderapi.Domain.Services
         {
             var result = new AuthResult();
             var client = await _context.Clients
-                .FirstOrDefaultAsync(x => x.Sha256 == request.CryptoId);
+                .FirstOrDefaultAsync(x => x.Digest == request.Digest);
 
             if (client == null)
             {
@@ -83,11 +83,11 @@ namespace libloaderapi.Domain.Services
                 return result;
             }
 
-            var expectedDigest = string.Concat(new HMACSHA256(client.Key)
-                .ComputeHash(HexUtils.HexStringToByteArray(request.CryptoId))
+            var expectedDigest = string.Concat(new HMACSHA256(client.ApiKey)
+                .ComputeHash(Convert.FromBase64String(request.Digest))
                 .Select(x => x.ToString("x2")));
 
-            if (expectedDigest == request.Digest)
+            if (expectedDigest == request.Signature)
             {
                 result.Success = true;
                 result.Message = "OK";

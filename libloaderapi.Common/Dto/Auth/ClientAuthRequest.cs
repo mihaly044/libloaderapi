@@ -3,13 +3,14 @@
     public class ClientAuthRequest
     {
         /// <summary>
-        /// The SHA1 hash of the client executable
-        /// </summary>
-        public string CryptoId { get; set; }
-
-        /// <summary>
-        /// The HMACSHA56/1 digest of the client executable's SHA1 hash
+        /// The SHA1 authenticode digest of the client
         /// </summary>
         public string Digest { get; set; }
+
+        /// <summary>
+        /// The HMACSHA2561 digest of the authenticode digest
+        /// of the client signed with a secret api key
+        /// </summary>
+        public string Signature { get; set; }
     }
 }

@@ -7,9 +7,9 @@ namespace libloaderapi.Common.Dto.Client
     {
         public Guid Id { get; set; } = Guid.NewGuid();
 
-        public string Sha256 { get; set; }
+        public string Digest { get; set; }
 
-        public byte[] Key { get; set; }
+        public byte[] ApiKey { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 

@@ -41,10 +41,10 @@ namespace libloaderapi.Controllers
                 Id = c.Id,
                 BucketType = c.BucketType,
                 CreatedAt = c.CreatedAt,
-                Key = c.Key,
+                ApiKey = null,
                 LastUsed = c.LastUsed,
                 RegistrantIp = c.RegistrantIp,
-                Sha256 = c.Sha256,
+                Digest = null,
                 Tag = c.Tag
             }));
         }

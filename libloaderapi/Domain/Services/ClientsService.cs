@@ -21,7 +21,7 @@ namespace libloaderapi.Domain.Services
 
         Task<Client> GetByClientIdAsync(Guid clientId);
 
-        Task<IEnumerable<Client>> GetBySha256Async(string sha256);
+        Task<IEnumerable<Client>> GetByDigestAsync(string sha256);
 
         Task DeleteByIdAsync(Guid clientId);
 
@@ -56,15 +56,6 @@ namespace libloaderapi.Domain.Services
                 return result;
             }
 
-            // Check if this is a valid exe
-            var peStream = request.File.OpenReadStream();
-            if (!PeUtils.IsValidExe(peStream))
-            {
-                result.Success = false;
-                result.Message = "Invalid file";
-                return result;
-            }
-
             // Check if we have a matching tag
             if (!string.IsNullOrEmpty(request.Tag))
             {
@@ -76,23 +67,30 @@ namespace libloaderapi.Domain.Services
                 }
             }
 
-            // Calculate the SHA256 hash of the client file
-            peStream.Position = 0; // Rewind stream
-            var sha256Task = CryptoUtils.CalcSha256Hash(peStream);
-            var clientsTask = _context.Clients
+            // Parse PE & calculate the authenticode digest
+            var peStream = request.File.OpenReadStream();
+            var digestBytes = await PeAuthenticode.GetDigest(peStream);
+            if (digestBytes == null)
+            {
+                result.Success = false;
+                result.Message = "Invalid file";
+                return result;
+            }
+
+            // Get matching clients to the current user and bucket
+            var digest = Convert.ToBase64String(digestBytes);
+            var clients = await _context.Clients
                 .Where(x => x.UserId == userId && x.BucketType == request.Bucket)
                 .ToListAsync();
 
-            var clients = await clientsTask;
-            var sha256 = await sha256Task;
-
-            // Check if we already have a client with the same hash
-            var matchingClient = clients.FirstOrDefault( x => x.Sha256 == sha256 && x.BucketType == request.Bucket && x.UserId == user.Id);
+            // Check if we already have a client with the same digest
+            var matchingClient = clients.FirstOrDefault(x =>
+                x.Digest == digest && x.BucketType == request.Bucket && x.UserId == user.Id);
             if (matchingClient != null)
             {
                 result.Success = true;
                 result.Skipped = true;
-                result.ApiKey = matchingClient.Key;
+                result.ApiKey = matchingClient.ApiKey;
                 result.Message = "Skipped - Client already exists";
                 return result;
             }
@@ -121,8 +119,8 @@ namespace libloaderapi.Domain.Services
             await _context.Clients.AddAsync(new Client
             {
                 UserId = userId,
-                Sha256 = sha256,
-                Key = key,
+                Digest = digest,
+                ApiKey = key,
                 BucketType = request.Bucket,
                 RegistrantIp = ipAddress,
                 Tag = request.Tag
@@ -153,10 +151,10 @@ namespace libloaderapi.Domain.Services
                 .FirstOrDefaultAsync(x => x.Id == clientId);
         }
 
-        public async Task<IEnumerable<Client>> GetBySha256Async(string sha256)
+        public async Task<IEnumerable<Client>> GetByDigestAsync(string digest)
         {
             return await _context.Clients
-                .Where(x => x.Sha256 == sha256).ToListAsync();
+                .Where(x => x.Digest == digest).ToListAsync();
         }
 
         public async Task DeleteByIdAsync(Guid clientId)

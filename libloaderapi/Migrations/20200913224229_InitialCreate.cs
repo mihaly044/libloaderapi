@@ -39,8 +39,8 @@ namespace libloaderapi.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
-                    Sha256 = table.Column<string>(type: "varchar(64)", maxLength: 64, nullable: false),
-                    Key = table.Column<string>(type: "varchar(172)", nullable: false),
+                    Digest = table.Column<string>(type: "varchar(28)", maxLength: 28, nullable: false),
+                    ApiKey = table.Column<string>(type: "varchar(172)", nullable: false),
                     CreatedAt = table.Column<DateTime>(nullable: false),
                     LastUsed = table.Column<DateTime>(nullable: true),
                     Tag = table.Column<string>(type: "varchar(32)", maxLength: 32, nullable: true),
@@ -88,9 +88,9 @@ namespace libloaderapi.Migrations
                 columns: new[] { "Id", "Name" },
                 values: new object[,]
                 {
-                    { new Guid("e294637b-9faa-4d87-9ccd-451c84096f59"), "LibAdmin" },
-                    { new Guid("523c923b-d935-4437-9f5d-dc65034c1cd8"), "LibUser" },
-                    { new Guid("54b67d8a-c1a3-4e27-938a-b230fe3ac527"), "LibClient" }
+                    { new Guid("e11d2d77-3d5e-4f03-96b2-ec8d8ba0c7c8"), "LibAdmin" },
+                    { new Guid("8837a565-49ff-423e-86cb-bcbd5af487d7"), "LibUser" },
+                    { new Guid("ceb6ae8f-62e8-4e1a-9017-fa7a4e01ab52"), "LibClient" }
                 });
 
             migrationBuilder.InsertData(
@@ -98,8 +98,8 @@ namespace libloaderapi.Migrations
                 columns: new[] { "Id", "CreatedAt", "LastLogin", "Name", "Password" },
                 values: new object[,]
                 {
-                    { new Guid("03660650-2347-4ff8-af88-3f974e67431b"), new DateTime(2020, 9, 8, 15, 27, 28, 596, DateTimeKind.Utc).AddTicks(3557), null, "admin", "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08" },
-                    { new Guid("83e653c7-3efa-430a-a0c6-80e38cac1f86"), new DateTime(2020, 9, 8, 15, 27, 28, 596, DateTimeKind.Utc).AddTicks(4490), null, "user", "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08" }
+                    { new Guid("c719978f-e75f-4ec3-b55b-cd80840e325d"), new DateTime(2020, 9, 13, 22, 42, 28, 787, DateTimeKind.Utc).AddTicks(6415), null, "admin", "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08" },
+                    { new Guid("0a40b8f2-3273-422c-b12f-3ac41feb6313"), new DateTime(2020, 9, 13, 22, 42, 28, 787, DateTimeKind.Utc).AddTicks(7398), null, "user", "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08" }
                 });
 
             migrationBuilder.InsertData(
@@ -107,8 +107,8 @@ namespace libloaderapi.Migrations
                 columns: new[] { "UserId", "RoleId" },
                 values: new object[,]
                 {
-                    { new Guid("03660650-2347-4ff8-af88-3f974e67431b"), new Guid("e294637b-9faa-4d87-9ccd-451c84096f59") },
-                    { new Guid("83e653c7-3efa-430a-a0c6-80e38cac1f86"), new Guid("523c923b-d935-4437-9f5d-dc65034c1cd8") }
+                    { new Guid("c719978f-e75f-4ec3-b55b-cd80840e325d"), new Guid("e11d2d77-3d5e-4f03-96b2-ec8d8ba0c7c8") },
+                    { new Guid("0a40b8f2-3273-422c-b12f-3ac41feb6313"), new Guid("8837a565-49ff-423e-86cb-bcbd5af487d7") }
                 });
 
             migrationBuilder.CreateIndex(
