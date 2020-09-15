@@ -135,7 +135,7 @@ namespace libloaderapi.Controllers
         }
         
         [DevelClientRestricted]
-        [Authorize(Roles = PredefinedRoles.Client)]
+        //[Authorize(Roles = PredefinedRoles.Client)]
         [HttpPost("analyze")]
         public ActionResult<ulong> Analyze(AnalyserContext req)
         {
