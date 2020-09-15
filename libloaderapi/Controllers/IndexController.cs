@@ -13,7 +13,6 @@ namespace libloaderapi.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            Response.StatusCode = StatusCodes.Status501NotImplemented;
             Response.ContentType = "text/plain";
             return new EmptyResult();
         }
