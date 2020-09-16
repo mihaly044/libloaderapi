@@ -10,10 +10,10 @@ COPY ["libloaderapi/libloaderapi.csproj", "libloaderapi/"]
 RUN dotnet restore "libloaderapi/libloaderapi.csproj"
 COPY . .
 WORKDIR "/src/libloaderapi"
-RUN dotnet build "libloaderapi.csproj" -c Debug -o /app/build
+RUN dotnet build "libloaderapi.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "libloaderapi.csproj" -c Debug -o /app/publish
+RUN dotnet publish "libloaderapi.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
